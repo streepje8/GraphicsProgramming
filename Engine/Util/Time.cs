@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
 
-namespace GraphicsProgramming.Engine.Core;
+namespace Striped.Engine.Util;
 
 public static class Time
 {

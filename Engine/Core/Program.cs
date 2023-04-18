@@ -1,6 +1,9 @@
 ﻿using System.Reflection;
-using GraphicsProgramming;
-using GraphicsProgramming.Engine.Core;
+using Striped.Engine.Core;
+using Striped.Engine.Rendering.Core;
+using Striped.Engine.Rendering.TemplateRenderers;
+
+namespace Striped.Engine.Bootstrapper;
 
 public class Program
 {
@@ -18,13 +21,12 @@ public class Program
             }
         }
         if (game == null) throw new Exception("No game class found in the current app domain! Get started by extending the 'Game' class.");
-        using (Window mainWindow = new Window(new OpenGLRenderer(),800, 400, "WOO"))
+        using (EngineWindow mainEngineWindow = new EngineWindow(new OpenGLRenderer(),game.Width, game.Height, game.Title))
         {
-            mainWindow.ActiveGame = game;
-            mainWindow.Initialize();
-            mainWindow.UpdateFrequency = 600;
-            mainWindow.Run();
-            mainWindow.Clean();
+            mainEngineWindow.ActiveGame = game;
+            game?.Init();
+            mainEngineWindow.Run();
+            mainEngineWindow.Clean();
         }
     }
 }

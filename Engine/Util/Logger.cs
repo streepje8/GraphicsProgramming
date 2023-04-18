@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
 
-namespace Util;
+namespace Striped.Engine.Util;
 
 public class LoggingContext
 {
