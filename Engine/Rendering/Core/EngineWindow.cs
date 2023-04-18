@@ -42,7 +42,8 @@ public unsafe class EngineWindow : NativeWindow
     }
 
     private Window* window;
-
+    private Vector2i size;
+    
     public EngineWindow(Renderer renderer, int width, int height, string title) : base(new NativeWindowSettings()
     {
         Size = new Vector2i(width,height),
@@ -50,6 +51,7 @@ public unsafe class EngineWindow : NativeWindow
     })
     {
         ActiveRenderer = renderer;
+        size = new Vector2i(width, height);
         Initialize();
         Application.SetWindow(this);
     }
@@ -66,6 +68,7 @@ public unsafe class EngineWindow : NativeWindow
     public void Run()
     {
         CenterWindow();
+        ActiveRenderer.OnResize(this,size.X,size.Y);
         while (!GLFW.WindowShouldClose(window))
         {
             Time.Tick();
