@@ -22,7 +22,7 @@ public class InteractiveEnvironment
         if (availbleEntityIndexes.Count > 0)
         {
             int index = availbleEntityIndexes.Pop();
-            e = new Entity(index);
+            e = new Entity(index,this);
             e.previousEntityID = index - 1;
             e.nextEntityID = index + 1;
             if(e.nextEntityID > entities.Span.Length) e.nextEntityID = -1;
@@ -31,13 +31,12 @@ public class InteractiveEnvironment
         else
         {
             Entity[] currentArr = entities.Span.ToArray();
-            e = new Entity(currentArr.Length);
+            e = new Entity(currentArr.Length,this);
             e.previousEntityID = currentArr.Length - 1;
             e.nextEntityID = -1;
             if(e.previousEntityID >= 0)currentArr[e.previousEntityID].nextEntityID = e.ID;
             entities = new Memory<Entity>(currentArr.Concat(new[] { e }).ToArray());
         }
-        e.SetEnvironment(this);
         e.SetTransform(e.AddComponent<Transform>());
         return e;
     }
@@ -69,9 +68,9 @@ public class InteractiveEnvironment
     public T AddComponent<T>(Entity? e) where T : Component<T>, new()
     {
         T c = new T();
-        if (Component<T>.availbleInstanceIndexes.Count > 0)
+        if (Component<T>.AvailbleInstanceIndexes.Count > 0)
         {
-            int index = Component<T>.availbleInstanceIndexes.Pop();
+            int index = Component<T>.AvailbleInstanceIndexes.Pop();
             c.SetID(index);
             c.nextComponentID = index + 1;
             c.previousComponentID = index - 1;
@@ -97,7 +96,7 @@ public class InteractiveEnvironment
 
     public void DestroyComponent<T>(int componentID, bool alertEntity = true) where T : Component<T>, new()
     {
-        Component<T>.availbleInstanceIndexes.Push(componentID);
+        Component<T>.AvailbleInstanceIndexes.Push(componentID);
         Component<T>.instances.Span[componentID].OnDestroy();
         if (Component<T>.instances.Span[componentID].nextComponentID >= 0)
             Component<T>.instances.Span[Component<T>.instances.Span[componentID].nextComponentID]

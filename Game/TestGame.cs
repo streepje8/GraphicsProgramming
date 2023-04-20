@@ -2,7 +2,9 @@
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using Striped.Engine.Core;
 using Striped.Engine.InputSystem;
+using Striped.Engine.Rendering.Core;
 using Striped.Engine.Rendering.TemplateRenderers;
+using Striped.Engine.Rendering.TemplateRenderers.Shaders;
 using Striped.Engine.Util;
 
 public class TestGame : Game
@@ -11,12 +13,16 @@ public class TestGame : Game
     public override int Width { get; } = 800;
     public override int Height { get; } = 400;
 
+    public static string AssetsFolder = "../../../Assets";
+
 
     public override void Init()
     {
         Logger.Info("Game ready!");
         InteractiveEnvironment? scene = GameSession.ActiveSession?.CreateEnvironment();
-        
+        OpenGLShader shader = ((OpenGLRenderer)GameSession.ActiveSession.Window.ActiveRenderer).CreateShader(AssetsFolder + "/Shaders/Standard/defaultDiffuse.shader");
+        shader.BindSource();
+        shader.CompileAndLoad();
     }
 
     public override void Update()

@@ -1,13 +1,15 @@
 ﻿using Newtonsoft.Json;
 using Striped.Engine.BuildinComponents;
 using Striped.Engine.Core;
+// ReSharper disable InconsistentNaming
+// ReSharper disable StaticMemberInGenericType
 
 namespace Striped.Engine.Core;
 
 public class Component<T> : ComponentBase
 {
     public static Memory<T> instances = new Memory<T>();
-    public static Stack<int> availbleInstanceIndexes = new Stack<int>();
+    public static readonly Stack<int> AvailbleInstanceIndexes = new Stack<int>();
     public int EntityID { get; private set; }
     public int ComponentID { get; private set; }
     public int nextComponentID = -1;
@@ -21,7 +23,7 @@ public class Component<T> : ComponentBase
     public void SetEntity(Entity? e)
     {
         entity = e;
-        transform = e.transform;
-        EntityID = e.ID;
+        transform = e?.transform;
+        if (e != null) EntityID = e.ID;
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Striped.Engine.Core;
+using Striped.Engine.Rendering.Core;
 using Striped.Engine.Util;
 
 namespace Striped.Engine.Core;
@@ -15,7 +16,8 @@ public class GameSession
             else Logger.Except(new Exception("Close the currently active session first!"));
         }
     }
-    public Game Game { get; }
+    public Game Game { get; private set; }
+    public EngineWindow Window { get; private set; }
     
     public List<InteractiveEnvironment?> LoadedEnvironments { get; } = new List<InteractiveEnvironment?>();
 
@@ -41,6 +43,11 @@ public class GameSession
     public void CloseSession()
     {
         activeSession = null;
+    }
+
+    public void BindWindow(EngineWindow window)
+    {
+        Window = window;
     }
 
     public void UnloadAllEnvironments()

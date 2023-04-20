@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Striped.Engine.BuildinComponents;
 using Striped.Engine.Core;
+// ReSharper disable InconsistentNaming
 
 namespace Striped.Engine.Core;
 
@@ -16,7 +17,11 @@ public class Entity : RuntimeObject
     public Dictionary<Type,int[]> components = new Dictionary<Type, int[]>();
 
     
-    public Entity(int id) { ID = id; }
+    public Entity(int id, InteractiveEnvironment environment)
+    {
+        ID = id;
+        this.environment = environment;
+    }
     
     public void Destroy()
     {
@@ -28,11 +33,6 @@ public class Entity : RuntimeObject
         }
     }
 
-    public void SetEnvironment(InteractiveEnvironment interactiveEnvironment)
-    {
-        environment = interactiveEnvironment;
-    }
-    
     public T? AddComponent<T>() where T : Component<T>, new()
     {
         if(new T().IsExclusiveComponent) if(components.TryGetValue(typeof(T), out int[] results)) if (results.Length > 0) return null;
@@ -77,7 +77,6 @@ public class Entity : RuntimeObject
     public override void Deserialize(string data)
     {
         Entity? e = JsonConvert.DeserializeObject<Entity>(data);
-        e.SetEnvironment(environment);
         e.SetTransform(e.GetComponent<Transform>());
     }
 }

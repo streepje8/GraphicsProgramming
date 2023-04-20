@@ -21,9 +21,10 @@ public class Program
             }
         }
         if (game == null) throw new Exception("No game class found in the current app domain! Get started by extending the 'Game' class.");
-        new GameSession(game);
+        GameSession session = new GameSession(game);
         using (EngineWindow mainEngineWindow = new EngineWindow(new OpenGLRenderer(),game.Width, game.Height, game.Title))
         {
+            session.BindWindow(mainEngineWindow);
             game?.Init();
             mainEngineWindow.Run();
             mainEngineWindow.Clean();
