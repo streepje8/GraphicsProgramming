@@ -23,15 +23,16 @@ public static class Logger
 {
     public static LoggingContext GatherContext() => new LoggingContext(2);
 
-    public static void Info(object message, LoggingContext? context = null) => Log("INFO", Console.Out, message?.ToString(), context);
-    public static void Warn(object message, LoggingContext? context = null) => Log("WARNING", Console.Out, message?.ToString(), context);
-    public static void Err(object message, LoggingContext? context = null) => Log("ERROR", Console.Error, message?.ToString(), context);
+    public static void Log(object message, LoggingContext? context = null) => Info(message,context);
+    public static void Info(object message, LoggingContext? context = null) => Log("INFO", Console.Out, message.ToString() ?? "null", context);
+    public static void Warn(object message, LoggingContext? context = null) => Log("WARNING", Console.Out, message.ToString() ?? "null", context);
+    public static void Err(object message, LoggingContext? context = null) => Log("ERROR", Console.Error, message.ToString() ?? "null", context);
     
     public static void Info(string message, LoggingContext? context = null) => Log("INFO", Console.Out, message, context);
     public static void Warn(string message, LoggingContext? context = null) => Log("WARNING", Console.Out, message, context);
     public static void Err(string message, LoggingContext? context = null) => Log("ERROR", Console.Error, message, context);
     public static void Except(Exception e, LoggingContext? context = null) => Log("ERROR", Console.Error, e.ToString(), context);
-    public static void Log(string tag, TextWriter output, string message, LoggingContext? loggingContext)
+    private static void Log(string tag, TextWriter output, string message, LoggingContext? loggingContext)
     {
         DateTime currentTime = DateTime.Now;
         output.WriteLine("[" + tag + "/" + currentTime.ToString("HH:mm:ss") + "] " + (loggingContext != null ? loggingContext.ToString() : "") + message);

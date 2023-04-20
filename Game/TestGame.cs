@@ -11,9 +11,12 @@ public class TestGame : Game
     public override int Width { get; } = 800;
     public override int Height { get; } = 400;
 
+
     public override void Init()
     {
         Logger.Info("Game ready!");
+        InteractiveEnvironment? scene = GameSession.ActiveSession?.CreateEnvironment();
+        
     }
 
     public override void Update()

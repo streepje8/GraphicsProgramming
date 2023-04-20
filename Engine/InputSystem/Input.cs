@@ -4,12 +4,12 @@ namespace Striped.Engine.InputSystem;
 
 public static class Input
 {
-    private static KeyboardState lastKeyboardState;
-    public static void UpdateKeyboardState(KeyboardState newState) => lastKeyboardState = newState;
+    private static KeyboardState? LastKeyboardState;
+    public static void UpdateKeyboardState(KeyboardState? newState) => LastKeyboardState = newState;
 
-    public static bool GeyKey(Keys key) => lastKeyboardState.IsKeyDown(key);
-    public static bool GeyKeyDown(Keys key) => lastKeyboardState.IsKeyPressed(key);
-    public static bool GeyKeyUp(Keys key) => lastKeyboardState.IsKeyReleased(key);
-    public static bool AnyKey() => lastKeyboardState.IsAnyKeyDown;
-    public static bool WasKeyDown(Keys key) => lastKeyboardState.WasKeyDown(key);
+    public static bool GeyKey(Keys key) => LastKeyboardState != null && LastKeyboardState.IsKeyDown(key);
+    public static bool GeyKeyDown(Keys key) => LastKeyboardState != null && LastKeyboardState.IsKeyPressed(key);
+    public static bool GeyKeyUp(Keys key) => LastKeyboardState != null && LastKeyboardState.IsKeyReleased(key);
+    public static bool AnyKey() => LastKeyboardState != null && LastKeyboardState.IsAnyKeyDown;
+    public static bool WasKeyDown(Keys key) => LastKeyboardState != null && LastKeyboardState.WasKeyDown(key);
 }

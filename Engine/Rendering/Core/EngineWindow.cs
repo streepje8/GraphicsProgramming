@@ -1,5 +1,4 @@
-﻿using OpenTK.Graphics.OpenGL4;
-using OpenTK.Mathematics;
+﻿using OpenTK.Mathematics;
 using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using Striped.Engine.Core;
@@ -30,17 +29,6 @@ public unsafe class EngineWindow : NativeWindow
         }
     }
 
-    private Game? activeGame;
-    public Game? ActiveGame
-    {
-        get => activeGame;
-        set
-        {
-            if (activeGame == null) activeGame = value;
-            else throw new Exception("You are not allowed to overwrite the active game!");
-        }
-    }
-
     private Window* window;
     private Vector2i size;
     
@@ -56,10 +44,13 @@ public unsafe class EngineWindow : NativeWindow
         Application.SetWindow(this);
     }
 
+    private GLFWCallbacks.WindowSizeCallback resizeCallback;
+
     private void OnLoad()
     {
         ActiveRenderer.OnLoad();
-        GLFW.SetWindowSizeCallback(window,OnResize);
+        resizeCallback = (window1, width, height) => OnResize(window1,width, height); 
+        GLFW.SetWindowSizeCallback(window,resizeCallback);
     }
 
     private double frameTimer = 0f;
@@ -95,7 +86,26 @@ public unsafe class EngineWindow : NativeWindow
     private void OnUpdateFrame()
     {
         Time.Tick();
-        activeGame?.Update();
+        GameSession.ActiveSession?.Game?.Update();
+        if (GameSession.ActiveSession?.LoadedEnvironments != null)
+            foreach (var activeSessionLoadedEnvironment in GameSession.ActiveSession.LoadedEnvironments)
+            {
+                Span<Entity> entites = activeSessionLoadedEnvironment.GetEntitySpan();
+                for (int i = 0; i < entites.Length;)
+                {
+                    Entity entity = entites[i];
+                    entity.Update();
+                    i = entity.nextEntityID;
+                    if (i == -1) break;
+                }
+                foreach (var componentCollection in activeSessionLoadedEnvironment.allComponents.Values)
+                {
+                    foreach(ComponentBase component in componentCollection.Span)
+                    {
+                        component.Update();
+                    }
+                }
+            }
     }
 
     private void OnRenderFrame()
@@ -110,7 +120,8 @@ public unsafe class EngineWindow : NativeWindow
 
     public void Clean()
     {
-        activeGame?.OnApplicationQuit();
+        GameSession.ActiveSession?.UnloadAllEnvironments();
+        GameSession.ActiveSession?.Game?.OnApplicationQuit();
         ActiveRenderer.OnUnLoad();
     }
 
