@@ -1,6 +1,5 @@
 ﻿using OpenTK.Mathematics;
 using Striped.Engine.Core;
-using Striped.Engine.Util;
 
 namespace Striped.Engine.BuildinComponents;
 

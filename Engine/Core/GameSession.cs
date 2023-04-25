@@ -1,5 +1,4 @@
-﻿using Striped.Engine.Core;
-using Striped.Engine.Rendering.Core;
+﻿using Striped.Engine.Rendering.Core;
 using Striped.Engine.Util;
 
 namespace Striped.Engine.Core;

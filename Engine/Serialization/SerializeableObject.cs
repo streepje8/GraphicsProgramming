@@ -1,6 +1,4 @@
-﻿using Striped.Engine.Core;
-
-namespace Striped.Engine.Serialization;
+﻿namespace Striped.Engine.Serialization;
 
 public class SerializeableObject
 {

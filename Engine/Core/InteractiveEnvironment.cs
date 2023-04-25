@@ -1,6 +1,4 @@
-﻿using System.Diagnostics;
-using Striped.Engine.BuildinComponents;
-using Striped.Engine.Util;
+﻿using Striped.Engine.BuildinComponents;
 
 namespace Striped.Engine.Core;
 
@@ -65,7 +63,7 @@ public class InteractiveEnvironment
         entities.Span[e.ID] = null;
     }
     
-    public T AddComponent<T>(Entity? e) where T : Component<T>, new()
+    public T AddComponent<T>(Entity? e) where T : ComponentBase, new()
     {
         T c = new T();
         if (Component<T>.AvailbleInstanceIndexes.Count > 0)
@@ -91,7 +89,42 @@ public class InteractiveEnvironment
         c.OnCreate();
         if(allComponents.ContainsKey(typeof(T))) allComponents.Remove(typeof(T));
         allComponents.Add(typeof(T), new Memory<ComponentBase>(Component<T>.instances.ToArray().Cast<ComponentBase>().ToArray()));
+        AddInheritanceReferencesRecursive(c);
         return c;
+    }
+
+    private void AddInheritanceReferencesRecursive<T>(T component) where T : ComponentBase, new()
+    {
+        if (typeof(T).BaseType != typeof(Component<T>))
+        {
+            if (typeof(T).BaseType != null)
+            {
+                Type baseType = typeof(T).BaseType;
+                Memory<ComponentBase> currentComps = new Memory<ComponentBase>();
+                if (allComponents.TryGetValue(baseType, out Memory<ComponentBase> foundComps)) currentComps = foundComps;
+                ComponentBase[] newComps = currentComps.Span.ToArray().Append(component).ToArray();
+                if (allComponents.ContainsKey(baseType)) allComponents.Remove(baseType);
+                allComponents.Add(baseType, new Memory<ComponentBase>(newComps));
+                AddInheritanceReferencesRecursive(component,baseType);
+            }
+        }
+    }
+    
+    private void AddInheritanceReferencesRecursive(object component, Type baseType)
+    {
+        if (baseType.BaseType != typeof(Component<>).MakeGenericType(baseType))
+        {
+            if (baseType.BaseType != null)
+            {
+                Type baseBaseType = baseType.BaseType;
+                Memory<ComponentBase> currentComps = new Memory<ComponentBase>();
+                if (allComponents.TryGetValue(baseBaseType, out Memory<ComponentBase> foundComps)) currentComps = foundComps;
+                ComponentBase[] newComps = currentComps.Span.ToArray().Append((ComponentBase)component).ToArray();
+                if (allComponents.ContainsKey(baseType)) allComponents.Remove(baseType);
+                allComponents.Add(baseType, new Memory<ComponentBase>(newComps));
+                AddInheritanceReferencesRecursive(component,baseType);
+            }
+        }
     }
 
     public void DestroyComponent<T>(int componentID, bool alertEntity = true) where T : Component<T>, new()

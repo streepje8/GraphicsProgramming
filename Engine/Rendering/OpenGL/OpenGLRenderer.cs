@@ -1,31 +1,77 @@
-﻿using System.Diagnostics;
+﻿using GraphicsProgramming.Engine.BuildinComponents.Renderers.Abstract;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using Striped.Engine.BuildinComponents;
+using Striped.Engine.Core;
 using Striped.Engine.Rendering.Core;
 using Striped.Engine.Rendering.TemplateRenderers.Shaders;
-using Striped.Engine.Util;
 
 namespace Striped.Engine.Rendering.TemplateRenderers;
 
 public class OpenGLRenderer : Renderer
 {
-    int VertexBufferObject;
-    float[] triangle = {
-        -0.5f, -0.5f, 0.0f, 1f, 0.0f, 0.0f, //Bottom-left vertex 
-        0.5f, -0.5f, 0.0f, 0.0f, 1f, 0.0f, //Bottom-right vertex
-        0.0f,  0.5f, 0.0f, 0.0f, 0f, 1.0f, //Top vertex
-    };
+    // need 24 vertices for normal/uv-mapped Cube
+    // float[] vertices = new float[]{
+    //     // positions            //colors            // tex coords   // normals
+    //     0.5f, -0.5f, -0.5f,     1.0f, 1.0f, 1.0f,   1.0f, 0.0f,       00.0f, -10.0f, 00.0f,
+    //     0.5f, -0.5f, 0.5f,      1.0f, 1.0f, 1.0f,   10.0f, 10.0f,       00.0f, -10.0f, 00.0f,
+    //     -0.5f, -0.5f, 0.5f,     1.0f, 1.0f, 1.0f,   00.0f, 10.0f,       00.0f, -10.0f, 00.0f,
+    //     -0.5f, -0.5f, -.5f,     1.0f, 1.0f, 1.0f,   00.0f, 00.0f,       00.0f, -10.0f, 00.0f,
+    //
+    //     0.5f, 0.5f, -0.5f,      1.0f, 1.0f, 1.0f,   20.0f, 00.0f,       10.0f, 00.0f, 00.0f,
+    //     0.5f, 0.5f, 0.5f,       1.0f, 1.0f, 1.0f,   20.0f, 10.0f,       10.0f, 00.0f, 00.0f,
+    //
+    //     0.5f, 0.5f, 0.5f,       1.0f, 1.0f, 1.0f,   10.0f, 20.0f,       00.0f, 00.0f, 10.0f,
+    //     -0.5f, 0.5f, 0.5f,      1.0f, 1.0f, 1.0f,   00.0f, 20.0f,       00.0f, 00.0f, 10.0f,
+    //
+    //     -0.5f, 0.5f, 0.5f,      1.0f, 1.0f, 1.0f,   -10.0f, 10.0f,      -10.0f, 00.0f, 00.0f,
+    //     -0.5f, 0.5f, -.5f,      1.0f, 1.0f, 1.0f,   -10.0f, 00.0f,      -10.0f, 00.0f, 00.0f,
+    //
+    //     -0.5f, 0.5f, -.5f,      1.0f, 1.0f, 1.0f,   00.0f, -10.0f,      00.0f, 00.0f, -10.0f,
+    //     0.5f, 0.5f, -0.5f,      1.0f, 1.0f, 1.0f,   10.0f, -10.0f,      00.0f, 00.0f, -10.0f,
+    //
+    //     -0.5f, 0.5f, -.5f,      1.0f, 1.0f, 1.0f,   30.0f, 00.0f,       00.0f, 10.0f, 00.0f,
+    //     -0.5f, 0.5f, 0.5f,      1.0f, 1.0f, 1.0f,   30.0f, 10.0f,       00.0f, 10.0f, 00.0f,
+    //
+    //     0.5f, -0.5f, 0.5f,      1.0f, 1.0f, 1.0f,   10.0f, 10.0f,       00.0f, 00.0f, 10.0f,
+    //     -0.5f, -0.5f, 0.5f,     1.0f, 1.0f, 1.0f,   00.0f, 10.0f,       00.0f, 00.0f, 10.0f,
+    //
+    //     -0.5f, -0.5f, 0.5f,     1.0f, 1.0f, 1.0f,   00.0f, 10.0f,       -10.0f, 00.0f, 00.0f,
+    //     -0.5f, -0.5f, -.5f,     1.0f, 1.0f, 1.0f,   00.0f, 00.0f,       -10.0f, 00.0f, 00.0f,
+    //
+    //     -0.5f, -0.5f, -.5f,     1.0f, 1.0f, 1.0f,   00.0f, 00.0f,       00.0f, 00.0f, -10.0f,
+    //     0.5f, -0.5f, -0.5f,     1.0f, 1.0f, 1.0f,   10.0f, 00.0f,       00.0f, 00.0f, -10.0f,
+    //
+    //     0.5f, -0.5f, -0.5f,     1.0f, 1.0f, 1.0f,   10.0f, 00.0f,       10.0f, 00.0f, 00.0f,
+    //     0.5f, -0.5f, 0.5f,      1.0f, 1.0f, 1.0f,   10.0f, 10.0f,       10.0f, 00.0f, 00.0f,
+    //
+    //     0.5f, 0.5f, -0.5f,      1.0f, 1.0f, 1.0f,   20.0f, 00.0f,       00.0f, 10.0f, 00.0f,
+    //     0.5f, 0.5f, 0.5f,       1.0f, 1.0f, 1.0f,   20.0f, 10.0f,       00.0f, 10.0f, 00.0f
+    // };
+    //
+    // private int stride = (3 + 3 + 2 + 3) * sizeof(float);
+    //
+    //  int[] cubeIndices = new int[]{  // note that we start from 0!
+    //     // DOWN
+    //     0, 1, 2,   // first triangle
+    //     0, 2, 3,    // second triangle
+    //     // BACK
+    //     14, 6, 7,   // first triangle
+    //     14, 7, 15,    // second triangle
+    //     // RIGHT
+    //     20, 4, 5,   // first triangle
+    //     20, 5, 21,    // second triangle
+    //     // LEFT
+    //     16, 8, 9,   // first triangle
+    //     16, 9, 17,    // second triangle
+    //     // FRONT
+    //     18, 10, 11,   // first triangle
+    //     18, 11, 19,    // second triangle
+    //     // UP
+    //     22, 12, 13,   // first triangle
+    //     22, 13, 23,    // second triangle
+    // };
     
-    float[] quad = {
-        -0.5f, -0.5f, 0.0f, 1f, 0.0f, 0.0f, //Bottom-left vertex 
-        0.5f, -0.5f, 0.0f, 0.0f, 1f, 0.0f, //Bottom-right vertex
-        -0.5f, 0.5f, 0.0f, 0f, 0.0f, 1.0f, //Bottom-left vertex 
-        0.5f, 0.5f, 0.0f, 1.0f, 1f, 0.0f, //Bottom-right vertex
-    };
-    int VertexArrayObject;
-
-
     private static Vector4 clearColor = new Vector4(0.0f, 0.0f, 0.0f, 1.0f);
     public static Vector4 ClearColor
     {
@@ -37,41 +83,32 @@ public class OpenGLRenderer : Renderer
         }
     }
 
-    private Dictionary<string, OpenGLShader> shaders = new Dictionary<string, OpenGLShader>();
+    private static Dictionary<string, OpenGLShader?> shaders = new Dictionary<string, OpenGLShader?>();
 
     public override void OnResize(EngineWindow engineWindow, int width, int height)
     {
         GL.Viewport(0,0,width,height);
     }
     
-    public OpenGLShader CreateShader(string filePath)
+    public OpenGLShader? CreateShader(string filePath)
     {
-        OpenGLShader shader = new OpenGLShader(filePath);
+        OpenGLShader? shader = new OpenGLShader(filePath);
         shaders.Add(shader.name,shader);
         return shader;
     }
 
-    private Transform transform;
+    public static OpenGLShader? GetShader(string name)
+    {
+        if (shaders.TryGetValue(name, out OpenGLShader? shader)) return shader;
+        return null;
+    }
     
     public override void OnLoad()
     {
+        OpenGLShader? shader = CreateShader("../../../Assets" + "/Shaders/Standard/errorShader.shader");
+        shader.BindSource();
+        shader.CompileAndLoad();
         GL.ClearColor(clearColor.X,clearColor.Y,clearColor.Z,clearColor.W);
-        
-        
-        VertexBufferObject = GL.GenBuffer();
-        VertexArrayObject = GL.GenVertexArray();
-        
-        GL.BindVertexArray(VertexArrayObject);
-
-        GL.BindBuffer(BufferTarget.ArrayBuffer, VertexBufferObject);
-        GL.BufferData(BufferTarget.ArrayBuffer, quad.Length * sizeof(float), quad, BufferUsageHint.StaticDraw);
-
-        GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 6 * sizeof(float), 0);
-        GL.VertexAttribPointer(1, 3, VertexAttribPointerType.Float, false, 6 * sizeof(float), 3 * sizeof(float));
-        GL.EnableVertexAttribArray(0);
-        GL.EnableVertexAttribArray(1);
-        
-        transform = new Transform();
     }
 
     private Matrix4 mat;
@@ -79,23 +116,25 @@ public class OpenGLRenderer : Renderer
     public override void OnRenderFrame()
     {
         GL.Clear(ClearBufferMask.ColorBufferBit);
-
-        transform.rotation *= Quaternion.FromEulerAngles(new Vector3(0, 0, (float)(10000f * Time.deltaTime)));
-        if (shaders.Values.Count > 0)
+        foreach (Camera cam in Camera.instances.Span)
         {
-            shaders.Values.First().Enable();
+            if (cam.isActive)
+            {
+                RenderCamera(cam);
+            }
+        }
+    }
 
-            mat = transform.TRS();
-            //Logger.Info(mat);
-            GL.UniformMatrix4(shaders.Values.First().GetUniformLocation("transform"), true, ref mat);
-            GL.BindVertexArray(VertexArrayObject);
-            GL.DrawArrays(PrimitiveType.TriangleStrip, 0, 4);
+    private void RenderCamera(Camera cam)
+    {
+        foreach (RenderComponent rend in Component<QuadRenderer>.instances.Span)
+        {
+            rend.OnRender(cam);
         }
     }
 
     public override void OnUnLoad()
     {
-        GL.DeleteBuffer(VertexBufferObject);
         foreach (var openGLShader in shaders) openGLShader.Value.CleanUp();
     }
 }

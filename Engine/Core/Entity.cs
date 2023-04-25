@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 using Striped.Engine.BuildinComponents;
-using Striped.Engine.Core;
+
 // ReSharper disable InconsistentNaming
 
 namespace Striped.Engine.Core;
@@ -29,11 +29,19 @@ public class Entity : RuntimeObject
         foreach (var i in components.ToArray().AsSpan())
         {
             var genericDestroyMethod = destroyMethod?.MakeGenericMethod(i.Key);
-            genericDestroyMethod?.Invoke(environment, new object?[] { i.Value, false });
+            try
+            {
+                genericDestroyMethod?.Invoke(environment, new object?[] { i.Value, false });
+            }
+            catch (Exception e)
+            {
+                
+            }
         }
     }
-
-    public T? AddComponent<T>() where T : Component<T>, new()
+    
+    
+    public T? AddComponent<T>() where T : ComponentBase, new()
     {
         if(new T().IsExclusiveComponent) if(components.TryGetValue(typeof(T), out int[] results)) if (results.Length > 0) return null;
         return environment.AddComponent<T>(this);
@@ -45,7 +53,7 @@ public class Entity : RuntimeObject
     public void RemoveComponent<T>(T component) where T : Component<T>, new() => environment.DestroyComponent<T>(component.ComponentID,true);
     
 
-    internal void AddComponentInternal<T>(T component) where T : Component<T>, new()
+    internal void AddComponentInternal<T>(T component) where T : ComponentBase, new()
     {
         int[] componentIDs = components.ContainsKey(typeof(T)) ? components[typeof(T)] : new int[0];
         componentIDs.Append(component.ComponentID);
