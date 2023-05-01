@@ -16,18 +16,19 @@ public class TestGame : Game
 
     public static string AssetsFolder = "../../../Assets";
 
-
+    private Entity quado;
     public override void Init()
     {
         Logger.Info("Game ready!");
         InteractiveEnvironment? scene = GameSession.ActiveSession?.CreateEnvironment();
         OpenGLShader? shader = ((OpenGLRenderer)GameSession.ActiveSession.Window.ActiveRenderer).CreateShader(AssetsFolder + "/Shaders/Standard/defaultDiffuse.shader");
-        shader.BindSource();
-        shader.CompileAndLoad();
         Entity cam = scene.CreateEntity();
         cam.AddComponent<Camera>();
         Entity quad = scene.CreateEntity();
-        quad.AddComponent<QuadRenderer>();
+        QuadRenderer qr = quad.AddComponent<QuadRenderer>();
+        qr.materal = new GLMaterial("Default/Diffuse");
+
+        quado = quad;
     }
 
     public override void Update()
@@ -37,6 +38,8 @@ public class TestGame : Game
             Application.Quit();
         }
 
+        quado.transform.rotation *= Quaternion.FromEulerAngles(0,0, (float)Time.deltaTime * 1000);
+        
         if (Input.GeyKeyDown(Keys.A))
         {
             OpenGLRenderer.ClearColor = new Vector4(1, 0, 0, (float)Time.deltaTime);

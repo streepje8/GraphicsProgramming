@@ -27,7 +27,6 @@ public class QuadRenderer : RenderComponent
 
     public override void OnCreate()
     {
-        Logger.Info("OnCreate");
         if (transform == null)
         {
             entity.AddComponent<Transform>();
@@ -51,16 +50,15 @@ public class QuadRenderer : RenderComponent
     
     public override void OnRender(Camera cam)
     {
-        Logger.Info("OnRender");
         transformReference = transform.TRS();
         GL.UniformMatrix4(materal.shader.GetUniformLocation("transform"), true, ref transformReference);
         GL.BindVertexArray(vertexArrayObject);
+        materal.Enable();
         GL.DrawArrays(PrimitiveType.TriangleStrip, 0, 4);
     }
 
     public override void OnDestroy()
     {
-        Logger.Info("OnDestroy");
         GL.DeleteBuffer(vertexBufferObject);
     }
 }

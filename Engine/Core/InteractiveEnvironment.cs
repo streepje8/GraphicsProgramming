@@ -1,4 +1,5 @@
-﻿using Striped.Engine.BuildinComponents;
+﻿using System.Net.Http.Headers;
+using Striped.Engine.BuildinComponents;
 
 namespace Striped.Engine.Core;
 
@@ -127,7 +128,7 @@ public class InteractiveEnvironment
         }
     }
 
-    public void DestroyComponent<T>(int componentID, bool alertEntity = true) where T : Component<T>, new()
+    public void DestroyComponent<T>(int componentID, bool alertEntity = true) where T : ComponentBase, new()
     {
         Component<T>.AvailbleInstanceIndexes.Push(componentID);
         Component<T>.instances.Span[componentID].OnDestroy();
@@ -183,6 +184,15 @@ public class InteractiveEnvironment
             return null;
         }
         return null;
+    }
+
+    public Span<T> GetAllComponentsInScene<T>()
+    {
+        if (allComponents.TryGetValue(typeof(T), out Memory<ComponentBase> components))
+        {
+            return components.Span.ToArray().Cast<T>().ToArray();
+        }
+        return new Memory<T>(Array.Empty<T>()).Span;
     }
 
     public static Span<T> GetAllComponents<T>() where T : Component<T>, new()

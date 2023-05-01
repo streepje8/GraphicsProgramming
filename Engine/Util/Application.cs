@@ -5,6 +5,7 @@ namespace Striped.Engine.Util;
 public static class Application
 {
     public static EngineWindow? Window { get; private set; } = null;
+    public static string AssetsFolder = "../../../Assets";
 
     public static void SetWindow(EngineWindow win)
     {

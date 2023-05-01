@@ -13,4 +13,9 @@ public class GLMaterial
         if (glShader == null) Logger.Err("A shader with the name " + shaderName + " could not be found!");
         else shader = glShader;
     }
+
+    public void Enable()
+    {
+        shader.Enable();
+    }
 }

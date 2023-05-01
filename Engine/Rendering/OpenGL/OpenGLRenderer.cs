@@ -1,10 +1,12 @@
-﻿using GraphicsProgramming.Engine.BuildinComponents.Renderers.Abstract;
+﻿using System.Net.Mime;
+using GraphicsProgramming.Engine.BuildinComponents.Renderers.Abstract;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using Striped.Engine.BuildinComponents;
 using Striped.Engine.Core;
 using Striped.Engine.Rendering.Core;
 using Striped.Engine.Rendering.TemplateRenderers.Shaders;
+using Striped.Engine.Util;
 
 namespace Striped.Engine.Rendering.TemplateRenderers;
 
@@ -94,6 +96,8 @@ public class OpenGLRenderer : Renderer
     {
         OpenGLShader? shader = new OpenGLShader(filePath);
         shaders.Add(shader.name,shader);
+        shader.BindSource();
+        shader.CompileAndLoad();
         return shader;
     }
 
@@ -105,9 +109,7 @@ public class OpenGLRenderer : Renderer
     
     public override void OnLoad()
     {
-        OpenGLShader? shader = CreateShader("../../../Assets" + "/Shaders/Standard/errorShader.shader");
-        shader.BindSource();
-        shader.CompileAndLoad();
+        OpenGLShader? shader = CreateShader(Application.AssetsFolder + "/Shaders/Standard/errorShader.shader");
         GL.ClearColor(clearColor.X,clearColor.Y,clearColor.Z,clearColor.W);
     }
 
@@ -127,7 +129,7 @@ public class OpenGLRenderer : Renderer
 
     private void RenderCamera(Camera cam)
     {
-        foreach (RenderComponent rend in Component<QuadRenderer>.instances.Span)
+        foreach (RenderComponent rend in cam.entity.GetEnvironment().GetAllComponentsInScene<RenderComponent>())
         {
             rend.OnRender(cam);
         }
