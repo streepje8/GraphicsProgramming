@@ -85,7 +85,7 @@ public unsafe class EngineWindow : NativeWindow
 
     private void OnUpdateFrame()
     {
-        Time.Tick();
+        //Time.Tick();
         GameSession.ActiveSession?.Game?.Update();
         if (GameSession.ActiveSession?.LoadedEnvironments != null)
             foreach (var activeSessionLoadedEnvironment in GameSession.ActiveSession.LoadedEnvironments)

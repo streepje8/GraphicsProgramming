@@ -74,11 +74,6 @@ public class OpenGLShader
         }
     }
 
-    public int GetAttribLocation(string attribName)
-    {
-        return GL.GetAttribLocation(handle, attribName);
-    }
-    
     public void BindSource()
     {
         vertexShader = GL.CreateShader(ShaderType.VertexShader);
@@ -141,4 +136,10 @@ public class OpenGLShader
     }
 
     public int GetUniformLocation(string name) => GL.GetUniformLocation(handle, name);
+    public int GetAttribLocation(string name) => GL.GetAttribLocation(handle, name);
+
+    public void BindAttribLocation(int index, string name)
+    {
+        GL.BindAttribLocation(handle, index, name);
+    }
 }

@@ -125,10 +125,13 @@ public class OpenGLRenderer : Renderer
                 RenderCamera(cam);
             }
         }
+
+        Camera.SetNoneActive();
     }
 
     private void RenderCamera(Camera cam)
     {
+        cam.SetActive();
         foreach (RenderComponent rend in cam.entity.GetEnvironment().GetAllComponentsInScene<RenderComponent>())
         {
             rend.OnRender(cam);
