@@ -20,7 +20,7 @@ public class MeshRenderer : RenderComponent
     public void SetMesh(GLMesh mesh)
     {
         Mesh = mesh;
-        renderMesh = mesh.renderMesh;
+        renderMesh = mesh.RenderMesh;
         ReloadMesh();
     }
     

@@ -58,7 +58,7 @@ public class OpenGLRenderer : Renderer
     {
         OpenGLShader? shader = CreateShader(Application.AssetsFolder + "/Shaders/Standard/errorShader.shader");
         GL.ClearColor(clearColor.X,clearColor.Y,clearColor.Z,clearColor.W);
-        //GL.Enable(EnableCap.DepthTest);
+        GL.Enable(EnableCap.DepthTest);
         GL.Enable(EnableCap.CullFace);
         GL.CullFace(CullFaceMode.Back);
     }
@@ -68,6 +68,7 @@ public class OpenGLRenderer : Renderer
     public override void OnRenderFrame()
     {
         GL.Clear(ClearBufferMask.ColorBufferBit);
+        GL.Clear(ClearBufferMask.DepthBufferBit);
         foreach (Camera cam in Camera.instances.Span)
         {
             if (cam.isActive)

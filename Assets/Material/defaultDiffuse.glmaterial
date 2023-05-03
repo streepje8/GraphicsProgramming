@@ -1,0 +1,5 @@
+{
+  "shaderName": "Default/Diffuse",
+  "shader": "../../../Assets/Shaders/Standard/defaultDiffuse.shader",
+  "textures": []
+}

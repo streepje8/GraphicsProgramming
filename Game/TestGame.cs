@@ -25,21 +25,10 @@ public class TestGame : Game
         Entity cam = scene.CreateEntity();
         cam.AddComponent<Camera>();
         
-        // Entity quad = scene.CreateEntity();
-        // quad.transform.position = new Vector3(0, 0, -3);
-        // QuadRenderer qr = quad.AddComponent<QuadRenderer>();
-        // string material = @"{  
-        // ""shaderName"": ""Default/Diffuse"",
-        // ""shader"": ""../../../Assets/Shaders/Standard/defaultDiffuse.shader"",
-        // ""textures"": [
-        // ""C:\\Users\\streep\\Desktop\\TestImage.jpg""
-        //     ]    }    ";
-        // qr.SetMaterial(Deserializer.Deserialize<GLMaterial>(material));
-
         Entity cube = scene.CreateEntity();
         MeshRenderer mr = cube.AddComponent<MeshRenderer>();
-        mr.SetMesh(ObjLoader.LoadDefaultMesh(DefaultMesh.Cube));
-        mr.SetMaterial(new GLMaterial("Default/Diffuse"));
+        mr.SetMesh(ModelLoader.LoadDefaultMesh(DefaultMesh.Sphere));
+        mr.SetMaterial(AssetImporter.ImportAsset<GLMaterial>(Application.AssetsFolder + "/Material/defaultDiffuse.glmaterial")); //new GLMaterial("Default/Diffuse")
 
         Texture2D cat = new Texture2D("C:\\Users\\streep\\Desktop\\TestImage.jpg");
         mr.materal.textures.Add(cat);
@@ -69,7 +58,7 @@ public class TestGame : Game
             OpenGLRenderer.ClearColor = new Vector4(0, 0, 1, 1);
         }
 
-        cube.transform.rotation *= Quaternion.FromEulerAngles(0, (float)(2f * Time.deltaTime), (float)(2f * Time.deltaTime));
+        cube.transform.rotation *= Quaternion.FromEulerAngles(0, (float)(2f * Time.deltaTime), 0);
     }
 
     public override void OnApplicationQuit()

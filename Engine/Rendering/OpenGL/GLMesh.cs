@@ -7,54 +7,45 @@ namespace Striped.Engine.Rendering.TemplateRenderers;
 public class GLMesh : SerializeableObject
 {
     public string name = "new mesh";
-    public GLMeshData renderMesh { get; private set; }
-
+    [JsonIgnore]public GLMeshData RenderMesh { get => renderMesh; }
+    private GLMeshData renderMesh;
+    
     public GLMesh() => renderMesh = new GLMeshData();
     
     public void SetVertices(float[] vertices)
     {
-        GLMeshData data = renderMesh;
-        data.vertices = vertices;
-        renderMesh = data;
+        renderMesh.vertices = vertices;
     }
     
     public void SetIndices(int[] indices)
     {
-        GLMeshData data = renderMesh;
-        data.indices = indices;
-        renderMesh = data;
+        renderMesh.indices = indices;
     }
     
     public void SetUVS(float[] uvs)
     {
-        GLMeshData data = renderMesh;
-        data.uvs = uvs;
-        renderMesh = data;
+        renderMesh.uvs = uvs;
     }
     
     public void SetNormals(float[] normals)
     {
-        GLMeshData data = renderMesh;
-        data.normals = normals;
-        renderMesh = data;
+        renderMesh.normals = normals;
     }
     
     public void SetVertexColors(float[] colors)
     {
-        GLMeshData data = renderMesh;
-        data.vertexColors = colors;
-        renderMesh = data;
+        renderMesh.vertexColors = colors;
     }
 
     public override string Serialize()
     {
-        return JsonConvert.SerializeObject(this,Formatting.Indented);
+        return JsonConvert.SerializeObject(renderMesh,Formatting.Indented);
     }
 
     public override void Deserialize(string data)
     {
-        GLMesh deserialized = JsonConvert.DeserializeObject<GLMesh>(data);
-        renderMesh = deserialized.renderMesh;
-        name = deserialized.name;
+        GLMeshData deserialized = JsonConvert.DeserializeObject<GLMeshData>(data);
+        renderMesh = deserialized;
+        name = "Deserialized Mesh";
     }
 }

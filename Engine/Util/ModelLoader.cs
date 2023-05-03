@@ -2,6 +2,7 @@
 using Assimp.Configs;
 using OpenTK.Mathematics;
 using Striped.Engine.Rendering.TemplateRenderers;
+using Striped.Engine.Serialization;
 
 namespace Striped.Engine.Util;
 
@@ -14,14 +15,14 @@ public enum DefaultMesh
     Torus
 }
 
-public class ObjLoader
+public class ModelLoader
 {
     public static GLMesh LoadDefaultMesh(DefaultMesh mesh)
     {
-        return LoadObj(Application.AssetsFolder + "/Meshes/Standard/" + mesh.ToString().ToLower() + ".obj");
+        return AssetImporter.ImportAsset<GLMesh>(Application.AssetsFolder + "/Meshes/Standard/" + mesh.ToString().ToLower() + ".glmesh");
     }
 
-    public static GLMesh LoadObj(string path)
+    public static GLMesh LoadModel(string path)
     {
         AssimpContext importer = new AssimpContext();
         importer.SetConfig(new NormalSmoothingAngleConfig(66.0f));
