@@ -23,7 +23,7 @@ Shader Default/Diffuse [
 			pos = gl_Position.xyz;
 			color = vColor;
 			texCoord = vTexCoord;
-			normal = vNormal;
+			normal = (vNormal * mat3(transpose(inverse(model)))).xyz;
 		}
 	]
 	
@@ -41,7 +41,8 @@ Shader Default/Diffuse [
 
 		void main()
 		{
-			FragColor = texture(texture0, texCoord * vec2(1.0f,-1.0f))* vec4(color, 1.0f); //texture(texture0, texCoord)* vec4(vColor, 1.0f)
+			float light = clamp((dot(normalize(normal),vec3(1,1,1)) + 1) / 2,0.2,1);
+			FragColor = texture(texture0, texCoord) * vec4(light); //texture(texture0, texCoord * vec2(1.0f,-1.0f))* vec4(color, 1.0f) //light * (texture(texture0, texCoord) * vec4((normal + 1) / 2,1))
 		}
 	]
 ]

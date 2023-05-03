@@ -1,5 +1,6 @@
 ﻿using OpenTK.Mathematics;
 using Striped.Engine.Core;
+using Striped.Engine.Util;
 
 namespace Striped.Engine.BuildinComponents;
 
@@ -11,9 +12,9 @@ public class Camera : Component<Camera>
     private float near = 0.1f;
     private float far = 1000f;
 
-    public int FOV {get => fov; set {fov = value; UpdateProjectionMatrix();}}
-    public float Near { get => near; set { near = value; UpdateProjectionMatrix(); } }
-    public float Far { get => far; set { far = value; UpdateProjectionMatrix(); } }
+    public int FOV {get => fov; set {fov = value; UpdateProjectionMatrix(GameSession.ActiveSession.Window.Size);}}
+    public float Near { get => near; set { near = value; UpdateProjectionMatrix(GameSession.ActiveSession.Window.Size); } }
+    public float Far { get => far; set { far = value; UpdateProjectionMatrix(GameSession.ActiveSession.Window.Size); } }
     
     private Matrix4 projectionMatrix = Matrix4.Identity;
     public Matrix4 ProjectionMatrix
@@ -33,7 +34,10 @@ public class Camera : Component<Camera>
         }
     }
 
-    public void UpdateProjectionMatrix() => projectionMatrix = Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(fov), GameSession.ActiveSession!.Window.Size.X / (float)GameSession.ActiveSession!.Window.Size.X, near, far);
+    public void UpdateProjectionMatrix(Vector2i size)
+    {
+        projectionMatrix = Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(fov), size.X / (float)size.Y, near, far);
+    }
 
     public void SetActive(bool active = true)
     {

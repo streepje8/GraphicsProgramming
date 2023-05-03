@@ -6,6 +6,7 @@ using Striped.Engine.Core;
 using Striped.Engine.InputSystem;
 using Striped.Engine.Rendering.TemplateRenderers;
 using Striped.Engine.Rendering.TemplateRenderers.Shaders;
+using Striped.Engine.Serialization;
 using Striped.Engine.Util;
 
 public class TestGame : Game
@@ -14,26 +15,37 @@ public class TestGame : Game
     public override int Width { get; } = 800;
     public override int Height { get; } = 800;
 
-    private Entity quado;
-    private Entity camo;
-    
+    private Entity cube;
+
     public override void Init()
     {
         InteractiveEnvironment? scene = GameSession.ActiveSession?.CreateEnvironment();
         OpenGLShader? shader = ((OpenGLRenderer)GameSession.ActiveSession.Window.ActiveRenderer).CreateShader(Application.AssetsFolder + "/Shaders/Standard/defaultDiffuse.shader");
-        
-        
+
         Entity cam = scene.CreateEntity();
         cam.AddComponent<Camera>();
-        camo = cam;
-        Entity quad = scene.CreateEntity();
-        quad.transform.position = new Vector3(0, 0, -3);
-        QuadRenderer qr = quad.AddComponent<QuadRenderer>();
-        qr.SetMaterial(new GLMaterial("Default/Diffuse"));
-        Texture2D cat = new Texture2D("C:\\Users\\streep\\Desktop\\TestImage.jpg");
-        qr.materal.textures.Add(cat);
+        
+        // Entity quad = scene.CreateEntity();
+        // quad.transform.position = new Vector3(0, 0, -3);
+        // QuadRenderer qr = quad.AddComponent<QuadRenderer>();
+        // string material = @"{  
+        // ""shaderName"": ""Default/Diffuse"",
+        // ""shader"": ""../../../Assets/Shaders/Standard/defaultDiffuse.shader"",
+        // ""textures"": [
+        // ""C:\\Users\\streep\\Desktop\\TestImage.jpg""
+        //     ]    }    ";
+        // qr.SetMaterial(Deserializer.Deserialize<GLMaterial>(material));
 
-        quado = quad;
+        Entity cube = scene.CreateEntity();
+        MeshRenderer mr = cube.AddComponent<MeshRenderer>();
+        mr.SetMesh(ObjLoader.LoadDefaultMesh(DefaultMesh.Cube));
+        mr.SetMaterial(new GLMaterial("Default/Diffuse"));
+
+        Texture2D cat = new Texture2D("C:\\Users\\streep\\Desktop\\TestImage.jpg");
+        mr.materal.textures.Add(cat);
+        
+        cube.transform.position = new Vector3(0, 0, -5);
+        this.cube = cube;
         Logger.Info("Game ready!");
     }
 
@@ -43,9 +55,7 @@ public class TestGame : Game
         {
             Application.Quit();
         }
-        
-        camo.transform.rotation *= Quaternion.FromEulerAngles(0, (float)(1f * Time.deltaTime), 0);
-        
+
         if (Input.GeyKeyDown(Keys.A))
         {
             OpenGLRenderer.ClearColor = new Vector4(1, 0, 0, 1);
@@ -59,7 +69,7 @@ public class TestGame : Game
             OpenGLRenderer.ClearColor = new Vector4(0, 0, 1, 1);
         }
 
-        quado.transform.rotation *= Quaternion.FromEulerAngles(0, 0, (float)(5f * Time.deltaTime));
+        cube.transform.rotation *= Quaternion.FromEulerAngles(0, (float)(2f * Time.deltaTime), (float)(2f * Time.deltaTime));
     }
 
     public override void OnApplicationQuit()

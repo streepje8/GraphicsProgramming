@@ -1,5 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 using OpenTK.Graphics.OpenGL4;
+using Striped.Engine.Serialization;
 using Striped.Engine.Util;
 
 namespace Striped.Engine.Rendering.TemplateRenderers.Shaders;
@@ -10,7 +11,7 @@ public struct StringBlock
     public string content;
 }
 
-public class OpenGLShader
+public class OpenGLShader : SerializeableObject
 {
     public string name;
     private int handle;
@@ -20,9 +21,16 @@ public class OpenGLShader
 
     private StringBlock fragmetShaderSource;
     private StringBlock vertexShaderSource;
-    
+
+    private string path = "";
     public OpenGLShader(string filePath)
     {
+        LoadShader(filePath);
+    }
+
+    private void LoadShader(string filePath)
+    {
+        path = filePath;
         string shaderSource = File.ReadAllText(filePath);
         if (shaderSource.StartsWith("Shader"))
         {
@@ -141,5 +149,17 @@ public class OpenGLShader
     public void BindAttribLocation(int index, string name)
     {
         GL.BindAttribLocation(handle, index, name);
+    }
+
+    public override string Serialize()
+    {
+        return path;
+    }
+
+    public override void Deserialize(string data)
+    {
+        LoadShader(data);
+        BindSource();
+        CompileAndLoad();
     }
 }

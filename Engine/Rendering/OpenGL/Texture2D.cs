@@ -1,15 +1,24 @@
 ﻿using OpenTK.Graphics.OpenGL4;
 using StbImageSharp;
+using Striped.Engine.Serialization;
+using Striped.Engine.Util;
 
 namespace Striped.Engine.Rendering.TemplateRenderers;
 
-public class Texture2D
+public class Texture2D : SerializeableObject
 {
     private int handle = -1;
-    
+    private string path = "";
+
     public Texture2D(string path)
     {
+        LoadTexture(path);
+    }
+
+    private void LoadTexture(string path)
+    {
         handle = GL.GenTexture();
+        this.path = path;
         StbImage.stbi_set_flip_vertically_on_load(1);
         
         GL.ActiveTexture(TextureUnit.Texture0);
@@ -42,5 +51,15 @@ public class Texture2D
     public void Bind()
     {
         GL.BindTexture(TextureTarget.Texture2D, handle);
+    }
+
+    public override string Serialize()
+    {
+        return path;
+    }
+
+    public override void Deserialize(string data)
+    {
+        LoadTexture(data);
     }
 }

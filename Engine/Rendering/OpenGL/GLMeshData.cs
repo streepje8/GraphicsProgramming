@@ -1,5 +1,6 @@
 ﻿namespace Striped.Engine.Rendering.TemplateRenderers;
 
+[Serializable]
 public enum GLMeshDataInfo
 {
     HasVertecies = 1,
@@ -9,13 +10,14 @@ public enum GLMeshDataInfo
     HasVertexColors = 16
 }
 
+[Serializable]
 public struct GLMeshData
 {
-    public float[] vertices;
-    public int[] indices;
-    public float[] vertexColors;
-    public float[] normals;
-    public float[] uvs;
+    public float[] vertices = Array.Empty<float>();
+    public int[] indices = Array.Empty<int>();
+    public float[] vertexColors = Array.Empty<float>();
+    public float[] normals = Array.Empty<float>();
+    public float[] uvs = Array.Empty<float>();
     
     public GLMeshData(float[]? vertices = null, int[]? indices = null, float[]? uvs = null, float[]? normals = null, float[]? vertexColors = null)
     {
