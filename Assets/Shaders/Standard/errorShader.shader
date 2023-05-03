@@ -7,15 +7,20 @@ Shader Default/Error [
 		in vec3 vNormal;
 		in vec3 vColor;
 		
-		uniform mat4 transform;
+		
+		uniform mat4 model;
+		uniform mat4 view;
+		uniform mat4 projection;
 
+		out vec3 pos;
 		out vec3 color;
 		out vec3 normal;
 		out vec2 texCoord;
 
 		void main()
 		{
-			gl_Position = vec4(vPosition, 1.0) * transform;
+			gl_Position = vec4(vPosition, 1.0) * model * view * projection;
+			pos = gl_Position.xyz;
 			color = vColor;
 			texCoord = vTexCoord;
 			normal = vNormal;
@@ -26,8 +31,8 @@ Shader Default/Error [
 		#version 330 core
 		in vec3 color;
 		in vec3 normal;
+		in vec3 pos;
 		in vec2 texCoord;
-		
 		
 		out vec4 FragColor;
 

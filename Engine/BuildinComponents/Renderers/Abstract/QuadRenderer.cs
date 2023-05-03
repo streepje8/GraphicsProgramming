@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using OpenTK.Graphics.OpenGL4;
+﻿using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using Striped.Engine.BuildinComponents;
 using Striped.Engine.Rendering.TemplateRenderers;
@@ -126,11 +125,20 @@ public class QuadRenderer : RenderComponent
     }
 
     private Matrix4 transformReference;
+    private Matrix4 viewReference;
+    private Matrix4 projectionReference;
     
     public override void OnRender(Camera cam)
     {
         transformReference = transform.TRS();
-        GL.UniformMatrix4(materal.shader.GetUniformLocation("transform"), true, ref transformReference);
+        viewReference = Camera.Active.ViewMatrix;
+        projectionReference = Camera.Active.ProjectionMatrix;
+        int transformLocation = materal.shader.GetUniformLocation("model");
+        int viewLocation = materal.shader.GetUniformLocation("view");
+        int projectionLocation = materal.shader.GetUniformLocation("projection");
+        GL.UniformMatrix4(transformLocation, true, ref transformReference);
+        GL.UniformMatrix4(viewLocation, true, ref viewReference);
+        GL.UniformMatrix4(projectionLocation, true, ref projectionReference);
         int i = 0;
         foreach (var texture in materal.textures)
         {

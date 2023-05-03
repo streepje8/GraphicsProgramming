@@ -1,6 +1,4 @@
-﻿using System.Net.Mime;
-using GraphicsProgramming.Engine.BuildinComponents.Renderers.Abstract;
-using OpenTK.Graphics.OpenGL4;
+﻿using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using Striped.Engine.BuildinComponents;
 using Striped.Engine.Core;
@@ -90,6 +88,10 @@ public class OpenGLRenderer : Renderer
     public override void OnResize(EngineWindow engineWindow, int width, int height)
     {
         GL.Viewport(0,0,width,height);
+        foreach (var camera in Component<Camera>.instances.Span)
+        {
+            camera.UpdateProjectionMatrix();
+        }
     }
     
     public OpenGLShader? CreateShader(string filePath)

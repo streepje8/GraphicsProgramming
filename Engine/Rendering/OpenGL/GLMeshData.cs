@@ -1,6 +1,4 @@
-﻿using System.Diagnostics;
-
-namespace Striped.Engine.Rendering.TemplateRenderers;
+﻿namespace Striped.Engine.Rendering.TemplateRenderers;
 
 public enum GLMeshDataInfo
 {

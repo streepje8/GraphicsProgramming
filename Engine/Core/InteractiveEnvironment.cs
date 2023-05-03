@@ -1,5 +1,4 @@
-﻿using System.Net.Http.Headers;
-using Striped.Engine.BuildinComponents;
+﻿using Striped.Engine.BuildinComponents;
 
 namespace Striped.Engine.Core;
 

@@ -15,6 +15,7 @@ public class TestGame : Game
     public override int Height { get; } = 800;
 
     private Entity quado;
+    private Entity camo;
     
     public override void Init()
     {
@@ -24,7 +25,9 @@ public class TestGame : Game
         
         Entity cam = scene.CreateEntity();
         cam.AddComponent<Camera>();
+        camo = cam;
         Entity quad = scene.CreateEntity();
+        quad.transform.position = new Vector3(0, 0, -3);
         QuadRenderer qr = quad.AddComponent<QuadRenderer>();
         qr.SetMaterial(new GLMaterial("Default/Diffuse"));
         Texture2D cat = new Texture2D("C:\\Users\\streep\\Desktop\\TestImage.jpg");
@@ -40,7 +43,9 @@ public class TestGame : Game
         {
             Application.Quit();
         }
-
+        
+        camo.transform.rotation *= Quaternion.FromEulerAngles(0, (float)(1f * Time.deltaTime), 0);
+        
         if (Input.GeyKeyDown(Keys.A))
         {
             OpenGLRenderer.ClearColor = new Vector4(1, 0, 0, 1);

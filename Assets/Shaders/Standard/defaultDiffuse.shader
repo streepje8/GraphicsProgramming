@@ -8,7 +8,9 @@ Shader Default/Diffuse [
 		in vec3 vColor;
 		
 		
-		uniform mat4 transform;
+		uniform mat4 model;
+		uniform mat4 view;
+		uniform mat4 projection;
 
 		out vec3 pos;
 		out vec3 color;
@@ -17,7 +19,7 @@ Shader Default/Diffuse [
 
 		void main()
 		{
-			gl_Position = vec4(vPosition, 1.0) * transform;
+			gl_Position = vec4(vPosition, 1.0) * model * view * projection;
 			pos = gl_Position.xyz;
 			color = vColor;
 			texCoord = vTexCoord;

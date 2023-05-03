@@ -1,7 +1,5 @@
-﻿using System.Diagnostics;
-using OpenTK.Graphics.OpenGL4;
+﻿using OpenTK.Graphics.OpenGL4;
 using StbImageSharp;
-using Striped.Engine.Util;
 
 namespace Striped.Engine.Rendering.TemplateRenderers;
 
