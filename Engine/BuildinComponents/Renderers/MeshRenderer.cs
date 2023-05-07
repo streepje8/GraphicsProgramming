@@ -118,6 +118,7 @@ public class MeshRenderer : RenderComponent
         int transformLocation = materal.shader.GetUniformLocation("model");
         int viewLocation = materal.shader.GetUniformLocation("view");
         int projectionLocation = materal.shader.GetUniformLocation("projection");
+        materal.Enable();
         GL.UniformMatrix4(transformLocation, true, ref transformReference);
         GL.UniformMatrix4(viewLocation, true, ref viewReference);
         GL.UniformMatrix4(projectionLocation, true, ref projectionReference);
@@ -130,7 +131,6 @@ public class MeshRenderer : RenderComponent
             i++;
         }
         GL.BindVertexArray(vertexArrayObject);
-        materal.Enable();
         GL.DrawElements(PrimitiveType.Triangles, renderMesh.indices.Length, DrawElementsType.UnsignedInt, 0);
     }
 

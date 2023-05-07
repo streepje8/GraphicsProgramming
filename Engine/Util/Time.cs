@@ -4,8 +4,8 @@ namespace Striped.Engine.Util;
 
 public static class Time
 {
-    public static double deltaTime { get; private set; }
-    public static double time { get; private set; }
+    public static float deltaTime { get; private set; }
+    public static float time { get; private set; }
     
     
     private static double lastTime = 0f;
@@ -13,7 +13,7 @@ public static class Time
     public static void Tick()
     {
         if (lastTime == 0) lastTime = NanoTime();
-        deltaTime = (NanoTime() - lastTime) / 1000d / 1000d / 1000d;
+        deltaTime = (float)((NanoTime() - lastTime) / 1000d / 1000d / 1000d);
         lastTime = NanoTime();
         time += deltaTime;
     }

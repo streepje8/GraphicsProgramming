@@ -16,21 +16,28 @@ public class TestGame : Game
     public override int Height { get; } = 800;
 
     private Entity cube;
+    public Entity camera;
+    public float cameraSpeed = 5f;
+    public float cameraRotationSpeed = 2f;
+
+    public float camRotX = 0;
+    public float camRotY = 0;
 
     public override void Init()
     {
         InteractiveEnvironment? scene = GameSession.ActiveSession?.CreateEnvironment();
-        OpenGLShader? shader = ((OpenGLRenderer)GameSession.ActiveSession.Window.ActiveRenderer).CreateShader(Application.AssetsFolder + "/Shaders/Standard/defaultDiffuse.shader");
-
+        
         Entity cam = scene.CreateEntity();
         cam.AddComponent<Camera>();
+
+        camera = cam;
         
         Entity cube = scene.CreateEntity();
         MeshRenderer mr = cube.AddComponent<MeshRenderer>();
-        mr.SetMesh(ModelLoader.LoadDefaultMesh(DefaultMesh.Sphere));
+        mr.SetMesh(ModelLoader.LoadModel(Application.AssetsFolder + "/Meshes/Body.obj"));
         mr.SetMaterial(AssetImporter.ImportAsset<GLMaterial>(Application.AssetsFolder + "/Material/defaultDiffuse.glmaterial")); //new GLMaterial("Default/Diffuse")
 
-        Texture2D cat = new Texture2D("C:\\Users\\streep\\Desktop\\TestImage.jpg");
+        Texture2D cat = new Texture2D("L:\\MyProjects\\GraphicsProgramming\\Assets\\Meshes\\BodyTexture.png");
         mr.materal.textures.Add(cat);
         
         cube.transform.position = new Vector3(0, 0, -5);
@@ -47,16 +54,48 @@ public class TestGame : Game
 
         if (Input.GeyKeyDown(Keys.A))
         {
-            OpenGLRenderer.ClearColor = new Vector4(1, 0, 0, 1);
+            camera.transform.position += camera.transform.rotation * new Vector3(-1, 0, 0) * cameraSpeed * Time.deltaTime;
+        }
+        if (Input.GeyKeyDown(Keys.W))
+        {
+            camera.transform.position += camera.transform.rotation * new Vector3(0, 0, -1) * cameraSpeed * Time.deltaTime;
         }
         if (Input.GeyKeyDown(Keys.S))
         {
-            OpenGLRenderer.ClearColor = new Vector4(0, 1, 0, 1);
+            camera.transform.position += camera.transform.rotation * new Vector3(0, 0, 1) * cameraSpeed * Time.deltaTime;
         }
         if (Input.GeyKeyDown(Keys.D))
         {
-            OpenGLRenderer.ClearColor = new Vector4(0, 0, 1, 1);
+            camera.transform.position += camera.transform.rotation * new Vector3(1, 0, 0) * cameraSpeed * Time.deltaTime;
         }
+        if (Input.GeyKeyDown(Keys.Space))
+        {
+            camera.transform.position += camera.transform.rotation * new Vector3(0, 1, 0) * cameraSpeed * Time.deltaTime;
+        }
+        if (Input.GeyKeyDown(Keys.LeftShift))
+        {
+            camera.transform.position += camera.transform.rotation * new Vector3(0, -1, 0) * cameraSpeed * Time.deltaTime;
+        }
+
+        if (Input.GeyKey(Keys.Left))
+        {
+            camRotY += cameraRotationSpeed * Time.deltaTime;
+        }
+        if (Input.GeyKey(Keys.Right))
+        {
+            camRotY -= cameraRotationSpeed * Time.deltaTime;
+        }
+        
+        if (Input.GeyKey(Keys.Up))
+        {
+            camRotX += cameraRotationSpeed * Time.deltaTime;
+        }
+        if (Input.GeyKey(Keys.Down))
+        {
+            camRotX -= cameraRotationSpeed * Time.deltaTime;
+        }
+        
+        camera.transform.rotation = Quaternion.FromEulerAngles(new Vector3(0, camRotY, 0)) * Quaternion.FromEulerAngles(new Vector3(camRotX,0,0));
 
         cube.transform.rotation *= Quaternion.FromEulerAngles(0, (float)(2f * Time.deltaTime), 0);
     }

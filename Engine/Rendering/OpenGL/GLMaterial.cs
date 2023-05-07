@@ -1,4 +1,6 @@
 ﻿using Newtonsoft.Json;
+using OpenTK.Graphics.OpenGL4;
+using OpenTK.Mathematics;
 using Striped.Engine.Rendering.TemplateRenderers.Shaders;
 using Striped.Engine.Serialization;
 using Striped.Engine.Util;
@@ -59,5 +61,72 @@ public class GLMaterial : SerializeableObject
         {
             textures.Add(Deserializer.Deserialize<Texture2D>(materialTexture));
         }
+    }
+
+    private readonly Dictionary<string, int> uniformCache = new Dictionary<string, int>();
+
+    public void SetMatrix4(string name, Matrix4 value)
+    {
+        Enable();
+        int endLocation = -1;
+        if (!uniformCache.TryGetValue(name, out int location))
+        {
+            endLocation = shader.GetUniformLocation(name);
+            uniformCache.Add(name, endLocation);
+        }
+        else endLocation = location;
+        GL.UniformMatrix4(endLocation, true, ref value);
+    }
+    
+    public void SetVector3(string name, Vector3 value)
+    {
+        Enable();
+        int endLocation = -1;
+        if (!uniformCache.TryGetValue(name, out int location))
+        {
+            endLocation = shader.GetUniformLocation(name);
+            uniformCache.Add(name, endLocation);
+        }
+        else endLocation = location;
+        GL.Uniform3(endLocation, ref value);
+    }
+    
+    public void SetVector2(string name, Vector2 value)
+    {
+        Enable();
+        int endLocation = -1;
+        if (!uniformCache.TryGetValue(name, out int location))
+        {
+            endLocation = shader.GetUniformLocation(name);
+            uniformCache.Add(name, endLocation);
+        }
+        else endLocation = location;
+        GL.Uniform2(endLocation, ref value);
+    }
+    
+    public void SetFloat(string name, float value)
+    {
+        Enable();
+        int endLocation = -1;
+        if (!uniformCache.TryGetValue(name, out int location))
+        {
+            endLocation = shader.GetUniformLocation(name);
+            uniformCache.Add(name, endLocation);
+        }
+        else endLocation = location;
+        GL.Uniform1(endLocation, value);
+    }
+    
+    public void SetInt(string name, int value)
+    {
+        Enable();
+        int endLocation = -1;
+        if (!uniformCache.TryGetValue(name, out int location))
+        {
+            endLocation = shader.GetUniformLocation(name);
+            uniformCache.Add(name, endLocation);
+        }
+        else endLocation = location;
+        GL.Uniform1(endLocation, value);
     }
 }

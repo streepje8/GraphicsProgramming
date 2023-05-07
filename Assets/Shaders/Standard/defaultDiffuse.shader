@@ -34,15 +34,16 @@ Shader Default/Diffuse [
 		in vec3 pos;
 		in vec2 texCoord;
 		
-		
 		out vec4 FragColor;
-
+		
 		uniform sampler2D texture0;
 
 		void main()
 		{
-			float light = clamp((dot(normalize(normal),vec3(1,1,1)) + 1) / 2,0.2,1);
-			FragColor = texture(texture0, texCoord) * vec4(light); //texture(texture0, texCoord * vec2(1.0f,-1.0f))* vec4(color, 1.0f) //light * (texture(texture0, texCoord) * vec4((normal + 1) / 2,1))
+			vec3 lightDir = vec3(1,1,1);
+			float light = clamp((dot(normalize(normal),lightDir) + 1) / 2,0.2,1); //Ambient + diffuse
+			if(dot(normalize(normal),lightDir) > 1.95) FragColor = vec4(1); //Specular
+			else FragColor = texture(texture0, texCoord) * vec4(light); //
 		}
 	]
 ]
