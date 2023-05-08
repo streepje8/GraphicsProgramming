@@ -20,7 +20,7 @@ Shader Default/Sky [
 		void main()
 		{
 			gl_Position = vec4(vPosition, 1.0) * model * view * projection;
-			pos = gl_Position.xyz;
+			pos = (vec4(vPosition, 1.0) * model).xyz;
 			color = vColor;
 			fragCoord = vTexCoord;
 			normal = (vNormal * mat3(transpose(inverse(model)))).xyz;
@@ -47,12 +47,12 @@ Shader Default/Sky [
 
 		void main()
 		{
-			vec3 topColor = vec3(1);
-			vec3 botColor = vec3(0);
+			vec3 topColor = vec3(0.53, 0.74, 0.86);
+			vec3 botColor = vec3(0.51,0.62,0.69);
 			
 			vec3 viewDir = normalize(pos - cameraPosition);
 			
-			fragColor = vec4(lerp(botColor,topColor, viewDir.y), 1);
+			fragColor = vec4(lerp(botColor,topColor, abs(viewDir.y)), 1);
 		}
 	]
 ]

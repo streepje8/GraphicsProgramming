@@ -20,7 +20,7 @@ Shader Default/Diffuse [
 		void main()
 		{
 			gl_Position = vec4(vPosition, 1.0) * model * view * projection;
-			pos = gl_Position.xyz;
+			pos = (vec4(vPosition, 1.0) * model).xyz;
 			color = vColor;
 			texCoord = vTexCoord;
 			normal = (vNormal * mat3(transpose(inverse(model)))).xyz;

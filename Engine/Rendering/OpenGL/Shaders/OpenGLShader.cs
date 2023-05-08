@@ -109,28 +109,36 @@ public class OpenGLShader : SerializeableObject
         {
             string infoLog = GL.GetShaderInfoLog(fragmentShader);
             Logger.Err(infoLog);
+            GL.DeleteShader(fragmentShader);
+            GL.DeleteShader(vertexShader);
+            LoadShader(Application.AssetsFolder + "/Shaders/Standard/errorShader.shader");
+            BindSource();
+            CompileAndLoad();
         }
-        
-        //Load
-        handle = GL.CreateProgram();
-
-        GL.AttachShader(handle, vertexShader);
-        GL.AttachShader(handle, fragmentShader);
-
-        GL.LinkProgram(handle);
-
-        GL.GetProgram(handle, GetProgramParameterName.LinkStatus, out int success);
-        if (success == 0)
+        else
         {
-            string infoLog = GL.GetProgramInfoLog(handle);
-            Logger.Err(infoLog);
+
+            //Load
+            handle = GL.CreateProgram();
+
+            GL.AttachShader(handle, vertexShader);
+            GL.AttachShader(handle, fragmentShader);
+
+            GL.LinkProgram(handle);
+
+            GL.GetProgram(handle, GetProgramParameterName.LinkStatus, out int success);
+            if (success == 0)
+            {
+                string infoLog = GL.GetProgramInfoLog(handle);
+                Logger.Err(infoLog);
+            }
+
+            //Cleanup
+            GL.DetachShader(handle, vertexShader);
+            GL.DetachShader(handle, fragmentShader);
+            GL.DeleteShader(fragmentShader);
+            GL.DeleteShader(vertexShader);
         }
-        
-        //Cleanup
-        GL.DetachShader(handle, vertexShader);
-        GL.DetachShader(handle, fragmentShader);
-        GL.DeleteShader(fragmentShader);
-        GL.DeleteShader(vertexShader);
     }
     
     public void Enable()
