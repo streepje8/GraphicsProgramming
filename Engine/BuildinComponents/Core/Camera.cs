@@ -29,8 +29,8 @@ public class Camera : Component<Camera>
     {
         get
         {
-            return (Matrix4.CreateScale(Vector3.One) * Matrix4.CreateFromQuaternion(transform.rotation) *
-                   Matrix4.CreateTranslation(transform.position)).Inverted();
+            return (Matrix4.Identity * Matrix4.CreateFromQuaternion(transform.rotation) *
+                   Matrix4.CreateTranslation(transform.position)).Inverted(); //Matrix4.CreateScale(Vector3.One)
         }
     }
 

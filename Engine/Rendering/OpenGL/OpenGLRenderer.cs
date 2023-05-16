@@ -113,7 +113,7 @@ public class OpenGLRenderer : Renderer
     
     private void SetupSkybox()
     {
-        GLMesh box = ModelLoader.LoadDefaultMesh(DefaultMesh.Cube);
+        GLMesh box = GLModelLoader.LoadDefaultMesh(DefaultMesh.Cube);
         GLMeshData renderMesh = box.RenderMesh;
         SkyboxMaterial = new GLMaterial("Default/Sky");
         if((renderMesh.GetMeshDataInfo() & (byte)GLMeshDataInfo.HasVertecies) == 0)
@@ -121,7 +121,7 @@ public class OpenGLRenderer : Renderer
             return;
         }
 
-        Texture2D rgbNoise = new Texture2D(Application.AssetsFolder + "/Textures/Standard/RGBNoise.png");
+        GLTexture2D rgbNoise = new GLTexture2D(Application.AssetsFolder + "/Textures/Standard/RGBNoise.png");
         SkyboxMaterial.textures.Add(rgbNoise);
 
         skyboxIndiciesCount = renderMesh.indices.Length;

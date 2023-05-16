@@ -62,6 +62,7 @@ public unsafe class EngineWindow : NativeWindow
         ActiveRenderer.OnResize(this,size.X,size.Y);
         while (!GLFW.WindowShouldClose(window))
         {
+            GLFW.PollEvents();
             Time.Tick();
             frameTimer += Time.deltaTime;
             updateTimer += Time.deltaTime;
@@ -79,13 +80,14 @@ public unsafe class EngineWindow : NativeWindow
             }
             double timeUntilNextFrame = Math.Min(timePerUpdate - updateTimer, timePerFrame - frameTimer);
             if (timeUntilNextFrame > 0.0)Thread.Sleep((int) Math.Floor(timeUntilNextFrame * 1000.0));
-            GLFW.PollEvents();
         }
     }
 
     private void OnUpdateFrame()
     {
-        //Time.Tick();
+        //Dont forget to call these otherwise isKeyPressed does not work
+        ProcessInputEvents();
+        ProcessWindowEvents(false);
         GameSession.ActiveSession?.Game?.Update();
         if (GameSession.ActiveSession?.LoadedEnvironments != null)
             foreach (var activeSessionLoadedEnvironment in GameSession.ActiveSession.LoadedEnvironments)

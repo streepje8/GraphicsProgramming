@@ -20,4 +20,8 @@
       <Folder Include="Assets\Meshes\Standard" />
     </ItemGroup>
 
+    <ItemGroup>
+      <None Remove="Assets\Shaders\Standard\defaultSkybox.shader" />
+    </ItemGroup>
+
 </Project>

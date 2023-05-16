@@ -132,6 +132,12 @@ public class OpenGLShader : SerializeableObject
                 string infoLog = GL.GetProgramInfoLog(handle);
                 Logger.Err(infoLog);
             }
+            Enable();
+            for (int i = 0; i < 31; i++)
+            {
+                GL.Uniform1(GL.GetUniformLocation(handle,"texture" + i),i);
+            }
+            
 
             //Cleanup
             GL.DetachShader(handle, vertexShader);

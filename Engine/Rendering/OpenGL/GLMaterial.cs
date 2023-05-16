@@ -18,7 +18,7 @@ public struct SerializedMaterial
 public class GLMaterial : SerializeableObject
 {
     public OpenGLShader shader;
-    public List<Texture2D> textures {get; private set;} = new List<Texture2D>();
+    public List<GLTexture2D> textures {get; private set;} = new List<GLTexture2D>();
 
     public GLMaterial(string shaderName)
     {
@@ -56,10 +56,10 @@ public class GLMaterial : SerializeableObject
             shader = Deserializer.Deserialize<OpenGLShader>(material.shader);
             OpenGLRenderer.AddShaderInternal(shader);
         }
-        textures = new List<Texture2D>();
+        textures = new List<GLTexture2D>();
         foreach (var materialTexture in material.textures)
         {
-            textures.Add(Deserializer.Deserialize<Texture2D>(materialTexture));
+            textures.Add(Deserializer.Deserialize<GLTexture2D>(materialTexture));
         }
     }
 
