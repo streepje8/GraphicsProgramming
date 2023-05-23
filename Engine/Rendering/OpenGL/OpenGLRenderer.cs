@@ -48,18 +48,27 @@ public class OpenGLRenderer : Renderer
         return shader;
     }
     
-    public static void AddShaderInternal(OpenGLShader shader)
+    public static void AddShaderInternal(OpenGLShader? shader)
     {
         shaders.Add(shader.name,shader);
     }
 
-    public static OpenGLShader? GetShader(string name)
+    public virtual OpenGLShader? GetShader(string name)
     {
         if (string.IsNullOrEmpty(name)) return null;
         if (shaders.TryGetValue(name, out OpenGLShader? shader)) return shader;
         return null;
     }
     
+    /*
+     public static OpenGLShader? GetShader(string name)
+        {
+            if (string.IsNullOrEmpty(name)) return null;
+            if (shaders.TryGetValue(name, out OpenGLShader? shader)) return shader;
+            return null;
+        }
+     */
+
     public override void OnLoad()
     {
         CreateShader(Application.AssetsFolder + "/Shaders/Standard/errorShader.shader");
@@ -144,7 +153,7 @@ public class OpenGLRenderer : Renderer
 
         //Tell the gpu about what the data is
         //Get the locations in the shader
-        OpenGLShader shader = SkyboxMaterial.shader;
+        OpenGLShader? shader = SkyboxMaterial.shader;
         int pos = -1, uv = -1, normal = -1, color = -1;
         
         int offset = 0;
@@ -207,5 +216,12 @@ public class OpenGLRenderer : Renderer
     {
         GL.DeleteBuffer(skyboxVBO);
         GL.DeleteBuffer(skyboxEBO);
+    }
+
+    public static OpenGLShader GetShaderStatic(string name)
+    {
+        if (string.IsNullOrEmpty(name)) return null;
+        if (shaders.TryGetValue(name, out OpenGLShader? shader)) return shader;
+        return null;
     }
 }

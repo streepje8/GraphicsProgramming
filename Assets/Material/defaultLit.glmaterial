@@ -1,0 +1,5 @@
+{
+  "shaderName": "Default/Lit",
+  "shader": "../../../Assets/Shaders/Standard/defaultLit.shader",
+  "textures": []
+}

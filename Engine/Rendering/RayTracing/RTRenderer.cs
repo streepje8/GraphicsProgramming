@@ -2,26 +2,39 @@
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using Striped.Engine.BuildinComponents;
+using Striped.Engine.Core;
+using Striped.Engine.Rendering.Core;
 using Striped.Engine.Rendering.TemplateRenderers;
 using Striped.Engine.Rendering.TemplateRenderers.Shaders;
 using Striped.Engine.Util;
 
-namespace Striped.Engine.BuildinComponents.Renderers.Abstract;
+namespace GraphicsProgramming.Engine.Rendering.RayTracing;
 
-public class GLQuadRenderer : RenderComponent
+public class RTRenderer : Renderer
 {
-    public GLMaterial materal { get; private set; } = new GLMaterial("Default/Error");
-    private int vertexBufferObject = -1;
-    private int vertexArrayObject = -1;
-    private int elementBufferObject = -1;
+    private static Vector4 clearColor = new Vector4(0.0f, 0.0f, 0.0f, 1.0f);
+    public static GLMaterial SkyboxMaterial { get; set; }
+    public static Vector4 ClearColor
+    {
+        get => clearColor;
+        set
+        {
+            clearColor = value;
+            GL.ClearColor(clearColor.X,clearColor.Y,clearColor.Z,clearColor.W);
+        }
+    }
 
-    public GLMeshData quad;
+    public static GLMaterial MainRenderer { get; private set; }
+
+    private static Dictionary<string, OpenGLShader?> shaders = new Dictionary<string, OpenGLShader?>();
     
+    
+    //Data for the main quad
     private float[] vertecies = {
-        -0.5f, -0.5f, 0.0f, 
-        0.5f, -0.5f, 0.0f, 
-        -0.5f, 0.5f, 0.0f,
-        0.5f, 0.5f, 0.0f
+        -1f, -1f, 0.5f, 
+        1f, -1f, 0.5f, 
+        -1f, 1f, 0.5f,
+        1f, 1f, 0.5f
     };
 
     private int[] indicies = new int[]
@@ -50,20 +63,58 @@ public class GLQuadRenderer : RenderComponent
         0f, 0.0f, 1.0f, //Top-left vertex 
         1.0f, 1f, 0.0f //Top-right vertex
     };
+    private GLMeshData quad;
+    private int vertexBufferObject = -1;
+    private int vertexArrayObject = -1;
+    private int elementBufferObject = -1;
+    
+    
 
-    public override void OnCreate()
+    public override void OnResize(EngineWindow engineWindow, int width, int height)
     {
-        quad = new GLMeshData(vertecies,indicies, vUVS, vNormals, vColors);
-        if (transform == null)
+        GL.Viewport(0,0,width,height);
+        foreach (var camera in Component<Camera>.instances.Span)
         {
-            entity.AddComponent<Transform>();
-            Logger.Warn("The " + GetType().Name + " component required a transform. Automatically added one!");
+            camera.UpdateProjectionMatrix(new Vector2i(width,height));
         }
-        ReloadMesh();
+    }
+    
+    public OpenGLShader? CreateShader(string filePath)
+    {
+        OpenGLShader? shader = new OpenGLShader(filePath);
+        shaders.Add(shader.name,shader);
+        shader.BindSource();
+        shader.CompileAndLoad();
+        return shader;
+    }
+    
+    public static void AddShaderInternal(OpenGLShader shader)
+    {
+        shaders.Add(shader.name,shader);
     }
 
-    public void ReloadMesh()
+    public static OpenGLShader? GetShader(string name)
     {
+        if (string.IsNullOrEmpty(name)) return null;
+        if (shaders.TryGetValue(name, out OpenGLShader? shader)) return shader;
+        return null;
+    }
+    
+    public override void OnLoad()
+    {
+        CreateShader(Application.AssetsFolder + "/Shaders/Standard/errorShader.shader");
+        OpenGLShader RTShader = CreateShader(Application.AssetsFolder + "/Shaders/Standard/defaultRayTraced.shader");
+        if(RTShader == null) Logger.Except(new FileNotFoundException("The raytracing shader could not be located! Are you sure your assets folder is set correctly?"));
+#pragma warning disable CS0618
+        MainRenderer = new GLMaterial(RTShader);
+#pragma warning restore CS0618
+        GL.ClearColor(clearColor.X,clearColor.Y,clearColor.Z,clearColor.W);
+        GL.Enable(EnableCap.DepthTest);
+        GL.Enable(EnableCap.CullFace);
+        GL.CullFace(CullFaceMode.Back);
+        
+        //Create the main quad
+        quad = new GLMeshData(vertecies,indicies, vUVS, vNormals, vColors);
         //Regenerate buffers
         if (vertexBufferObject != -1) GL.DeleteBuffer(vertexBufferObject);
         if(elementBufferObject != -1) GL.DeleteBuffer(elementBufferObject);
@@ -83,7 +134,7 @@ public class GLQuadRenderer : RenderComponent
 
         //Tell the gpu about what the data is
         //Get the locations in the shader
-        OpenGLShader? shader = materal.shader;
+        OpenGLShader? shader = MainRenderer.shader;
         int pos = -1, uv = -1, normal = -1, color = -1;
         
         int offset = 0;
@@ -119,29 +170,42 @@ public class GLQuadRenderer : RenderComponent
         }
     }
 
-    public void SetMaterial(GLMaterial mat)
-    {
-        materal = mat;
-        ReloadMesh();
-    }
-
+    private Matrix4 mat;
     private Matrix4 transformReference;
     private Matrix4 viewReference;
     private Matrix4 projectionReference;
     
-    public override void OnRender(Camera cam)
+    
+    public override void OnRenderFrame()
     {
-        transformReference = transform.TRS();
-        viewReference = Camera.Active.ViewMatrix;
-        projectionReference = Camera.Active.ProjectionMatrix;
-        int transformLocation = materal.shader.GetUniformLocation("model");
-        int viewLocation = materal.shader.GetUniformLocation("view");
-        int projectionLocation = materal.shader.GetUniformLocation("projection");
+        GL.Clear(ClearBufferMask.ColorBufferBit);
+        GL.Clear(ClearBufferMask.DepthBufferBit);
+        foreach (Camera cam in Camera.instances.Span)
+        {
+            if (cam.isActive)
+            {
+                RenderCamera(cam);
+            }
+        }
+        Camera.SetNoneActive();
+    }
+
+    private void RenderCamera(Camera cam)
+    {
+        cam.SetActive();
+        foreach (RenderComponent rend in cam.entity.GetEnvironment().GetAllComponentsInScene<RenderComponent>())
+        {
+            rend.OnRender(cam);
+        }
+        transformReference = Matrix4.Identity;
+        int transformLocation = MainRenderer.shader.GetUniformLocation("model");
         GL.UniformMatrix4(transformLocation, true, ref transformReference);
-        GL.UniformMatrix4(viewLocation, true, ref viewReference);
-        GL.UniformMatrix4(projectionLocation, true, ref projectionReference);
+        MainRenderer.SetVector3("_CamPos", cam.transform.position);
+        float planeHeight = cam.Near * MathF.Tan(MathHelper.DegreesToRadians(cam.FOV * 0.5f)) * 2;
+        MainRenderer.SetVector3("_ViewParams", new Vector3(planeHeight * cam.Aspect,planeHeight,cam.Near));
+        MainRenderer.SetMatrix4("_CamLocalToWorldMatrix", cam.transform.TRS());
         int i = 0;
-        foreach (var texture in materal.textures)
+        foreach (var texture in MainRenderer.textures)
         {
             Enum.TryParse("Texture" + i, out TextureUnit unit);
             GL.ActiveTexture(unit);
@@ -149,13 +213,14 @@ public class GLQuadRenderer : RenderComponent
             i++;
         }
         GL.BindVertexArray(vertexArrayObject);
-        materal.Enable();
+        MainRenderer.Enable();
         GL.DrawElements(PrimitiveType.Triangles, quad.indices.Length, DrawElementsType.UnsignedInt, 0);
     }
-
-    public override void OnDestroy()
+    
+    public override void OnUnLoad()
     {
         GL.DeleteBuffer(vertexBufferObject);
         GL.DeleteBuffer(elementBufferObject);
+        foreach (var openGLShader in shaders) openGLShader.Value.CleanUp();
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
+using Striped.Engine.Core;
 using Striped.Engine.Rendering.TemplateRenderers.Shaders;
 using Striped.Engine.Serialization;
 using Striped.Engine.Util;
@@ -17,14 +18,32 @@ public struct SerializedMaterial
 
 public class GLMaterial : SerializeableObject
 {
-    public OpenGLShader shader;
+    public OpenGLShader? shader;
     public List<GLTexture2D> textures {get; private set;} = new List<GLTexture2D>();
 
     public GLMaterial(string shaderName)
     {
-        OpenGLShader glShader = OpenGLRenderer.GetShader(shaderName);
+        OpenGLShader? glShader = null;
+        if (!(GameSession.ActiveSession.Window == null || GameSession.ActiveSession.Window.ActiveRenderer == null))
+        {
+            if (!typeof(OpenGLRenderer).IsAssignableFrom(GameSession.ActiveSession.Window.ActiveRenderer.GetType()))
+            {
+                Logger.Except(new Exception("GL Material only supports the OpenGLRenderer"), new LoggingContext(2));
+            }
+            glShader = ((OpenGLRenderer)GameSession.ActiveSession.Window.ActiveRenderer).GetShader(shaderName); ;
+        }
+        else
+        {
+            glShader = OpenGLRenderer.GetShaderStatic(shaderName); //Fallback for materials made before the renderer is initialized
+        }
         if (glShader == null) Logger.Err("A shader with the name " + shaderName + " could not be found!");
         else shader = glShader;
+    }
+    
+    [Obsolete("Warning you are creating an OpenGL Material with the unsafe constructor! Only do this when you know what you are doing")]
+    public GLMaterial(OpenGLShader shader)
+    {
+        this.shader = shader;
     }
     
 
@@ -50,7 +69,7 @@ public class GLMaterial : SerializeableObject
     public override void Deserialize(string data)
     {
         SerializedMaterial material = JsonConvert.DeserializeObject<SerializedMaterial>(data);
-        shader = OpenGLRenderer.GetShader(material.shaderName);
+        shader = ((OpenGLRenderer)GameSession.ActiveSession.Window.ActiveRenderer).GetShader(material.shaderName);
         if (shader == null)
         {
             shader = Deserializer.Deserialize<OpenGLShader>(material.shader);
@@ -75,6 +94,7 @@ public class GLMaterial : SerializeableObject
             uniformCache.Add(name, endLocation);
         }
         else endLocation = location;
+        if(endLocation == -1) Logger.Warn("Uniform " + name + " not found!");
         GL.UniformMatrix4(endLocation, true, ref value);
     }
     
@@ -88,6 +108,7 @@ public class GLMaterial : SerializeableObject
             uniformCache.Add(name, endLocation);
         }
         else endLocation = location;
+        if(endLocation == -1) Logger.Warn("Uniform " + name + " not found!");
         GL.Uniform3(endLocation, ref value);
     }
     
@@ -114,6 +135,7 @@ public class GLMaterial : SerializeableObject
             uniformCache.Add(name, endLocation);
         }
         else endLocation = location;
+        if(endLocation == -1) Logger.Warn("Uniform " + name + " not found!");
         GL.Uniform1(endLocation, value);
     }
     
@@ -127,6 +149,7 @@ public class GLMaterial : SerializeableObject
             uniformCache.Add(name, endLocation);
         }
         else endLocation = location;
+        if(endLocation == -1) Logger.Warn("Uniform " + name + " not found!");
         GL.Uniform1(endLocation, value);
     }
 }
