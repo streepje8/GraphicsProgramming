@@ -41,7 +41,7 @@ public class RaytracingDemo : Game
         {
             Application.Quit();
         }
-
+        
         if (Input.GetKey(Keys.A))
         {
             camera.transform.position += camera.transform.rotation * new Vector3(-1, 0, 0) * cameraSpeed * Time.deltaTime;
