@@ -174,6 +174,7 @@ public class RTRenderer : Renderer
     private Matrix4 transformReference;
     private Matrix4 viewReference;
     private Matrix4 projectionReference;
+    private int frame = 0;
     
     
     public override void OnRenderFrame()
@@ -200,6 +201,7 @@ public class RTRenderer : Renderer
         transformReference = Matrix4.Identity;
         int transformLocation = MainRenderer.shader.GetUniformLocation("model");
         GL.UniformMatrix4(transformLocation, true, ref transformReference);
+        MainRenderer.SetInt("_Frame", frame++);
         MainRenderer.SetVector3("_CamPos", cam.transform.position);
         float planeHeight = cam.Near * MathF.Tan(MathHelper.DegreesToRadians(cam.FOV * 0.5f)) * 2;
         MainRenderer.SetVector3("_ViewParams", new Vector3(planeHeight * cam.Aspect,planeHeight,cam.Near));

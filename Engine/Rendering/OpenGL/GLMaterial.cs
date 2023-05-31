@@ -84,7 +84,7 @@ public class GLMaterial : SerializeableObject
 
     private readonly Dictionary<string, int> uniformCache = new Dictionary<string, int>();
 
-    public void SetMatrix4(string name, Matrix4 value)
+    public void SetMatrix4(string name, Matrix4 value, bool supressWarnings = true)
     {
         Enable();
         int endLocation = -1;
@@ -94,11 +94,11 @@ public class GLMaterial : SerializeableObject
             uniformCache.Add(name, endLocation);
         }
         else endLocation = location;
-        if(endLocation == -1) Logger.Warn("Uniform " + name + " not found!");
+        if(!supressWarnings && endLocation == -1) Logger.Warn("Uniform " + name + " not found!");
         GL.UniformMatrix4(endLocation, true, ref value);
     }
     
-    public void SetVector3(string name, Vector3 value)
+    public void SetVector3(string name, Vector3 value, bool supressWarnings = true)
     {
         Enable();
         int endLocation = -1;
@@ -108,7 +108,7 @@ public class GLMaterial : SerializeableObject
             uniformCache.Add(name, endLocation);
         }
         else endLocation = location;
-        if(endLocation == -1) Logger.Warn("Uniform " + name + " not found!");
+        if(!supressWarnings && endLocation == -1) Logger.Warn("Uniform " + name + " not found!");
         GL.Uniform3(endLocation, ref value);
     }
     
@@ -125,7 +125,7 @@ public class GLMaterial : SerializeableObject
         GL.Uniform2(endLocation, ref value);
     }
     
-    public void SetFloat(string name, float value)
+    public void SetFloat(string name, float value, bool supressWarnings  = true)
     {
         Enable();
         int endLocation = -1;
@@ -135,11 +135,11 @@ public class GLMaterial : SerializeableObject
             uniformCache.Add(name, endLocation);
         }
         else endLocation = location;
-        if(endLocation == -1) Logger.Warn("Uniform " + name + " not found!");
+        if(!supressWarnings && endLocation == -1) Logger.Warn("Uniform " + name + " not found!");
         GL.Uniform1(endLocation, value);
     }
     
-    public void SetInt(string name, int value)
+    public void SetInt(string name, int value, bool supressWarnings  = true)
     {
         Enable();
         int endLocation = -1;
@@ -149,7 +149,7 @@ public class GLMaterial : SerializeableObject
             uniformCache.Add(name, endLocation);
         }
         else endLocation = location;
-        if(endLocation == -1) Logger.Warn("Uniform " + name + " not found!");
+        if(!supressWarnings && endLocation == -1) Logger.Warn("Uniform " + name + " not found!");
         GL.Uniform1(endLocation, value);
     }
 }
