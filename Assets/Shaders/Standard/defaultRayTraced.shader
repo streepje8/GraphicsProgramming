@@ -25,7 +25,7 @@ Shader Default/RayTraced [
 	Fragment [
 		#version 330 core
 		#define PI 3.1415926538
-		#define MAX_BOUNCE_COUNT 20
+		#define MAX_BOUNCE_COUNT 5
 		
 		in vec3 color;
 		in vec3 pos;
@@ -63,21 +63,21 @@ Shader Default/RayTraced [
 		
 		// PCG (permuted congruential generator). Thanks to:
 		// www.pcg-random.org and www.shadertoy.com/view/XlGcRh
-		int NextRandom(inout int state)
+		uint NextRandom(inout uint state)
 		{
-			state = state * 747796405 + 2891336453;
-			int result = ((state >> ((state >> 28) + 4)) ^ state) * 277803737;
+			state = state * 747796405u + 2891336453u;
+			uint result = ((state >> ((state >> 28) + 4u)) ^ state) * 277803737u;
 			result = (result >> 22) ^ result;
 			return result;
 		}
 
-		float RandomValue(inout int state)
+		float RandomValue(inout uint state)
 		{
-			return NextRandom(state) / 4294967295.0; // 2^32 - 1
+			return NextRandom(state) / 4294967295.0; // 2^32 - 1 //
 		}
 
 		// Random value in normal distribution (with mean=0 and sd=1)
-		float RandomValueNormalDistribution(inout int state)
+		float RandomValueNormalDistribution(inout uint state)
 		{
 			// Thanks to https://stackoverflow.com/a/6178290
 			float theta = 2 * 3.1415926 * RandomValue(state);
@@ -86,7 +86,7 @@ Shader Default/RayTraced [
 		}
 
 		// Calculate a random direction
-		vec3 RandomDirection(inout int state)
+		vec3 RandomDirection(inout uint state)
 		{
 			// Thanks to https://math.stackexchange.com/a/1585996
 			float x = RandomValueNormalDistribution(state);
@@ -95,7 +95,7 @@ Shader Default/RayTraced [
 			return normalize(vec3(x, y, z));
 		}
 
-		vec2 RandomPointInCircle(inout int rngState)
+		vec2 RandomPointInCircle(inout uint rngState)
 		{
 			float angle = RandomValue(rngState) * 2 * PI;
 			vec2 pointOnCircle = vec2(cos(angle), sin(angle));
@@ -137,6 +137,40 @@ Shader Default/RayTraced [
 		}
 		
 		//Made using https://www.shadertoy.com/view/wtSyRd
+		HitInfo HitBox(Ray ray, vec3 center, vec3 boxMin, vec3 boxMax, RTMaterial material) {
+			HitInfo info;
+			vec3 offset = ray.origin - center;
+			info.didHit = false;
+			info.dst = 0;
+			info.hitPoint = vec3(0,0,0);
+			info.normal = vec3(0,0,0);
+			info.material = material;
+			
+			vec3 rayInvDir = 1.0 / ray.dir;
+			vec3 tbot = rayInvDir * (boxMin - offset);
+			vec3 ttop = rayInvDir * (boxMax - offset);
+			vec3 tmin = min(ttop, tbot);
+			vec3 tmax = max(ttop, tbot);
+			vec2 t = max(tmin.xx, tmin.yz);
+			float t0 = max(t.x, t.y);
+			t = min(tmax.xx, tmax.yz);
+			float t1 = min(t.x, t.y);
+			vec2 result = vec2(t0, t1);
+			info.hitPoint = ray.origin + ray.dir * mix(result.x,result.y,result.x < 0);
+			
+			vec3 box_hit = info.hitPoint - center;
+			vec3 box_intersect_normal = box_hit / max(max(abs(box_hit.x), abs(box_hit.y)), abs(box_hit.z));
+			box_intersect_normal = clamp(box_intersect_normal, vec3(0.0,0.0,0.0), vec3(1.0,1.0,1.0));
+			box_intersect_normal = normalize(floor(box_intersect_normal * 1.0000001));
+			
+			
+			info.normal = box_intersect_normal;
+			info.didHit = t1 > max(t0, 0.0);
+			info.dst = distance(ray.origin, info.hitPoint);
+			
+			return info;
+		}
+		/*
 		HitInfo HitBox(Ray ray, vec3 center, vec3 minPos, vec3 maxPos, RTMaterial material) {
 			HitInfo info;
 			vec3 offset = ray.origin - center;
@@ -162,7 +196,9 @@ Shader Default/RayTraced [
 			float box_t_min = box.z;
 			vec3 boxctr = (minPos + maxPos) / 2.0;
 			vec3 box_hit = boxctr - (offset + (box_t_min * ray.dir));
-			box_hit = -box_hit;
+			box_hit.z = -box_hit.z;
+			box_hit.x = -box_hit.x;
+			box_hit.y = -box_hit.y;
 			vec3 box_intersect_normal = box_hit / max(max(abs(box_hit.x), abs(box_hit.y)), abs(box_hit.z));
 			box_intersect_normal = clamp(box_intersect_normal, vec3(0.0,0.0,0.0), vec3(1.0,1.0,1.0));
 			box_intersect_normal = normalize(floor(box_intersect_normal * 1.0000001));
@@ -172,6 +208,7 @@ Shader Default/RayTraced [
 			info.dst = distance(ray.origin,box_hit);
 			return info;
 		}
+		*/
 		
 		//Stolen from https://cmichel.io/howto-raytracer-ray-plane-intersection-theory
 		HitInfo HitPlane(Ray ray, vec3 center, vec3 normal)
@@ -182,6 +219,7 @@ Shader Default/RayTraced [
 			info.hitPoint = vec3(0,0,0);
 			info.normal = vec3(0,0,0);
 			info.material.color = vec4(1,0,0,1);
+			
 
 	
 			float denominator = dot(ray.dir, normal);
@@ -206,29 +244,37 @@ Shader Default/RayTraced [
 			closest.normal = vec3(0,0,0);
 			
 			RTMaterial light;
-			light.color = vec4(1,0,0,1);
+			light.color = vec4(0,0,0,0);
 			light.emissionColor = vec4(1,1,1,1);
-			light.emissionStrength = 1;
+			light.emissionStrength = 2;
 			
 			RTMaterial ground;
-			ground.color = vec4(0,1,0,1);
+			ground.color = vec4(0.6,1,1,1);
 			
 			RTMaterial sphere;
-			sphere.color = vec4(0,0,1,1);
+			sphere.color = vec4(0.2,0.2,1,1);
+			RTMaterial sphereT;
+			sphereT.color = vec4(0.2,1,0.2,1);
+			RTMaterial sphereTT;
+			sphereTT.color = vec4(1,0.2,0.2,1);
 			
 			//Loop through all objects
 			
-			HitInfo hit = HitSphere(ray, vec3(0,0,-4), 0.5, light);
+			HitInfo hit = HitSphere(ray, vec3(3,3,-3), 0.5, light);
 			if(hit.didHit && hit.dst < closest.dst) closest = hit;
-			hit = HitBox(ray, vec3(-50,-102,-50), vec3(0), vec3(100), ground);
+			hit = HitBox(ray, vec3(0,-51,0), vec3(-50), vec3(50), ground); //
 			if(hit.didHit && hit.dst < closest.dst) closest = hit;
-			hit = HitSphere(ray, vec3(4,0,-4), 1, sphere);
+			hit = HitSphere(ray, vec3(2,0,-4), 1, sphere);
+			if(hit.didHit && hit.dst < closest.dst) closest = hit;
+			hit = HitSphere(ray, vec3(0.5,0,-3), 0.7, sphereT);
+			if(hit.didHit && hit.dst < closest.dst) closest = hit;
+			hit = HitSphere(ray, vec3(-2,0.5,-3), 1.3, sphereTT);
 			if(hit.didHit && hit.dst < closest.dst) closest = hit;
 			
 			return closest;
 		}
 		
-		vec4 Trace(Ray baseRay, inout int state) {
+		vec4 Trace(Ray baseRay, inout uint state) {
 			vec4 incomingLight = vec4(0,0,0,1);
 			vec4 rayColor = vec4(1);
 			Ray ray;
@@ -240,11 +286,11 @@ Shader Default/RayTraced [
 				HitInfo info = CalculateScene(ray);
 				if(info.didHit) {
 					ray.origin = info.hitPoint;
-					//return vec4(normalize(info.normal),1);
+					RTMaterial material = info.material; // +
 					vec3 newDir = info.normal + RandomDirection(state);
+					if(dot(newDir, info.normal) < 0) newDir = -newDir;
 					ray.dir = normalize(newDir);
-					if(i == 1) return vec4(info.normal,1);
-					RTMaterial material = info.material;
+					
 					vec4 emittedLight = material.emissionColor * material.emissionStrength;
 					incomingLight += emittedLight * rayColor;
 					rayColor *= material.color;
@@ -263,13 +309,18 @@ Shader Default/RayTraced [
 			viewPointLocal.y *= -1;
 			viewPointLocal.z *= -1;
 			vec3 viewPoint = (vec4(viewPointLocal, 1) * _CamLocalToWorldMatrix).xyz;
-			int pixelIndex = int(floor(texCoord.y * 589425849 + texCoord.x * 98528));
-			int state = pixelIndex + _Frame * 719393;
+			uint pixelIndex = uint(floor((texCoord.y * 800u) * 800u + texCoord.x * 800u));
+			uint state = pixelIndex + uint(_Frame) * 719393u;
 			
 			Ray ray;
 			ray.origin = _CamPos;
 			ray.dir = normalize(viewPoint - ray.origin);
-			vec4 outcol = Trace(ray, state);
+			
+			vec4 outcol = vec4(0);
+			for(int i = 0; i < 800; i++) {
+				outcol += Trace(ray, state);
+			}
+			outcol /= 20;
 			FragColor = outcol;
 		}
 	]
