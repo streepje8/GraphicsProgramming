@@ -35,6 +35,7 @@ Shader Default/RayTraced [
 		uniform vec3 _ViewParams;
 		uniform mat4 _CamLocalToWorldMatrix;
 		uniform int _Frame;
+		uniform vec2 _ScreenSize;
 		
 		out vec4 FragColor;
 		
@@ -309,7 +310,7 @@ Shader Default/RayTraced [
 			viewPointLocal.y *= -1;
 			viewPointLocal.z *= -1;
 			vec3 viewPoint = (vec4(viewPointLocal, 1) * _CamLocalToWorldMatrix).xyz;
-			uint pixelIndex = uint(floor((texCoord.y * 800u) * 800u + texCoord.x * 800u));
+			uint pixelIndex = uint(floor((texCoord.y * uint(_ScreenSize.y)) * uint(_ScreenSize.x) + texCoord.x * uint(_ScreenSize.x)));
 			uint state = pixelIndex + uint(_Frame) * 719393u;
 			
 			Ray ray;
@@ -317,7 +318,7 @@ Shader Default/RayTraced [
 			ray.dir = normalize(viewPoint - ray.origin);
 			
 			vec4 outcol = vec4(0);
-			for(int i = 0; i < 800; i++) {
+			for(int i = 0; i < 400; i++) {
 				outcol += Trace(ray, state);
 			}
 			outcol /= 20;
