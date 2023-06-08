@@ -49,6 +49,8 @@ Shader Default/RayTraced [
 			vec4 color;
 			vec4 emissionColor;
 			float emissionStrength;
+			float specularProbability;
+			float smoothness;
 		};
 		
 		struct HitInfo {
@@ -229,16 +231,24 @@ Shader Default/RayTraced [
 			light.color = vec4(0,0,0,0);
 			light.emissionColor = vec4(1,1,1,1);
 			light.emissionStrength = 2;
+			light.specularProbability = 0;
+			light.smoothness = 0;
 			
 			RTMaterial ground;
 			ground.color = vec4(0.6,1,1,1);
 			
 			RTMaterial sphere;
 			sphere.color = vec4(0.2,0.2,1,1);
+			sphere.specularProbability = 1;
+			sphere.smoothness = 1;
 			RTMaterial sphereT;
 			sphereT.color = vec4(0.2,1,0.2,1);
+			sphereT.specularProbability = 1;
+			sphereT.smoothness = 1;
 			RTMaterial sphereTT;
 			sphereTT.color = vec4(1,0.2,0.2,1);
+			sphereTT.specularProbability = 0;
+			sphereTT.smoothness = 0;
 			
 			//Loop through all objects
 			
@@ -268,10 +278,12 @@ Shader Default/RayTraced [
 				HitInfo info = CalculateScene(ray);
 				if(info.didHit) {
 					ray.origin = info.hitPoint;
-					RTMaterial material = info.material; // +
-					vec3 newDir = info.normal + RandomDirection(state);
-					if(dot(newDir, info.normal) < 0) newDir = -newDir;
-					ray.dir = normalize(newDir);
+					RTMaterial material = info.material;
+					bool isSpecularBounce = material.specularProbability >= RandomValue(state);
+					vec3 diffuseDir = info.normal + RandomDirection(state);
+					if(dot(diffuseDir, info.normal) < 0) diffuseDir = -diffuseDir;
+					vec3 specularDir = reflect(ray.dir,info.normal);
+					ray.dir = normalize(mix(diffuseDir, specularDir, material.smoothness * float(isSpecularBounce)));
 					
 					vec4 emittedLight = material.emissionColor * material.emissionStrength;
 					incomingLight += emittedLight * rayColor;

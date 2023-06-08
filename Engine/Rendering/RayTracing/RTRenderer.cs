@@ -259,7 +259,7 @@ public class RTRenderer : Renderer
     public void ResetToFirstFrame()
     {
         CreateFrameBuffers();
-        frame = 0;
+        frame = -1;
     }
     
     public override void OnRenderFrame()
