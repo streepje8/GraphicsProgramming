@@ -2,8 +2,10 @@
 using OpenTK.Compute.OpenCL;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
+using OpenTK.Windowing.GraphicsLibraryFramework;
 using Striped.Engine.BuildinComponents;
 using Striped.Engine.Core;
+using Striped.Engine.InputSystem;
 using Striped.Engine.Rendering.Core;
 using Striped.Engine.Rendering.TemplateRenderers;
 using Striped.Engine.Rendering.TemplateRenderers.Shaders;
@@ -27,6 +29,7 @@ public class RTRenderer : Renderer
 
     public static GLMaterial MainRenderer { get; private set; }
     public static GLMaterial MainRefiner { get; private set; }
+    public static GLMaterial TexToScreen { get; private set; }
 
     private static Dictionary<string, OpenGLShader?> shaders = new Dictionary<string, OpenGLShader?>();
     
@@ -71,6 +74,10 @@ public class RTRenderer : Renderer
     private int elementBufferObject = -1;
     private int frameBuffer = -1;
     private int frameTextureID = -1;
+    private int secondFrameBuffer = -1;
+    private int secondFrameTextureID = -1;
+    private int storedFrameTextureID = -1;
+    
     
     
 
@@ -78,7 +85,7 @@ public class RTRenderer : Renderer
     {
         GL.Viewport(0,0,width,height);
         screenSize = new Vector2(width, height);
-        CreateFrameBuffer();
+        CreateFrameBuffers();
         frame = 0;
         foreach (var camera in Component<Camera>.instances.Span)
         {
@@ -119,6 +126,11 @@ public class RTRenderer : Renderer
         if(refineShader == null) Logger.Except(new FileNotFoundException("The raytracing refiner shader could not be located! Are you sure your assets folder is set correctly?"));
 #pragma warning disable CS0618
         MainRefiner = new GLMaterial(refineShader);
+#pragma warning restore CS0618
+        OpenGLShader texToScreenShader = CreateShader(Application.AssetsFolder + "/Shaders/Standard/defaultTexToScreen.shader");
+        if(texToScreenShader == null) Logger.Except(new FileNotFoundException("The raytracing refiner shader could not be located! Are you sure your assets folder is set correctly?"));
+#pragma warning disable CS0618
+        TexToScreen = new GLMaterial(texToScreenShader);
 #pragma warning restore CS0618
         GL.ClearColor(clearColor.X,clearColor.Y,clearColor.Z,clearColor.W);
         GL.Enable(EnableCap.DepthTest);
@@ -181,10 +193,10 @@ public class RTRenderer : Renderer
             offset += 3 * sizeof(float);
         }
         
-        CreateFrameBuffer();
+        CreateFrameBuffers();
     }
 
-    public void CreateFrameBuffer()
+    public void CreateFrameBuffers()
     {
         if(frameBuffer != -1) GL.DeleteFramebuffer(frameBuffer);
         if(frameTextureID != -1) GL.DeleteTexture(frameTextureID);
@@ -206,6 +218,35 @@ public class RTRenderer : Renderer
             Logger.Except(new Exception("The frame buffer could not be created! Ur GPU is too dumb for raytracing!"));
             Application.Quit();
         }
+        
+        if(secondFrameBuffer != -1) GL.DeleteFramebuffer(secondFrameBuffer);
+        if(secondFrameTextureID != -1) GL.DeleteTexture(secondFrameTextureID);
+        //Create frame buffer
+        secondFrameBuffer = GL.GenFramebuffer();
+        GL.BindFramebuffer(FramebufferTarget.Framebuffer, secondFrameBuffer);
+
+        secondFrameTextureID = GL.GenTexture();
+        GL.BindTexture(TextureTarget.Texture2D, secondFrameTextureID);
+        if(screenSize.X == 0 || screenSize.Y == 0) screenSize = new Vector2(800, 800); //Prevent a crash
+        GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgb, (int)screenSize.X, (int)screenSize.Y, 0, PixelFormat.Rgba, PixelType.UnsignedByte, IntPtr.Zero);
+        GL.TexParameter(TextureTarget.Texture2D,TextureParameterName.TextureMagFilter,(int)TextureMagFilter.Nearest);
+        GL.TexParameter(TextureTarget.Texture2D,TextureParameterName.TextureMinFilter,(int)TextureMinFilter.Nearest);
+        
+        GL.FramebufferTexture(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, secondFrameTextureID, 0);
+
+        if (GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer) != FramebufferErrorCode.FramebufferComplete)
+        {
+            Logger.Except(new Exception("The frame buffer could not be created! Ur GPU is too dumb for raytracing!"));
+            Application.Quit();
+        }
+
+        GL.DeleteTexture(storedFrameTextureID);
+        storedFrameTextureID = GL.GenTexture();
+        GL.BindTexture(TextureTarget.Texture2D, storedFrameTextureID);
+        if(screenSize.X == 0 || screenSize.Y == 0) screenSize = new Vector2(800, 800); //Prevent a crash
+        GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgb, (int)screenSize.X, (int)screenSize.Y, 0, PixelFormat.Rgba, PixelType.UnsignedByte, IntPtr.Zero);
+        GL.TexParameter(TextureTarget.Texture2D,TextureParameterName.TextureMagFilter,(int)TextureMagFilter.Nearest);
+        GL.TexParameter(TextureTarget.Texture2D,TextureParameterName.TextureMinFilter,(int)TextureMinFilter.Nearest);
     }
 
     private Matrix4 mat;
@@ -214,7 +255,12 @@ public class RTRenderer : Renderer
     private Matrix4 projectionReference;
     private int frame = 0;
     private Vector2 screenSize;
-    
+
+    public void ResetToFirstFrame()
+    {
+        CreateFrameBuffers();
+        frame = 0;
+    }
     
     public override void OnRenderFrame()
     {
@@ -233,7 +279,7 @@ public class RTRenderer : Renderer
         Camera.SetNoneActive();
         
         //Progressive rendering
-        GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+        GL.BindFramebuffer(FramebufferTarget.Framebuffer, secondFrameBuffer);
         GL.Viewport(0,0,(int)screenSize.X,(int)screenSize.Y);
         GL.Clear(ClearBufferMask.ColorBufferBit);
         GL.Clear(ClearBufferMask.DepthBufferBit);
@@ -242,12 +288,34 @@ public class RTRenderer : Renderer
         transformReference = Matrix4.Identity;
         int transformLocation = MainRefiner.shader.GetUniformLocation("model");
         GL.UniformMatrix4(transformLocation, true, ref transformReference);
-        MainRenderer.SetInt("_Frame", frame);
-        MainRenderer.SetVector2("_ScreenSize", screenSize);
-        GL.ActiveTexture(TextureUnit.Texture0);
+        MainRefiner.SetInt("_Frame", frame);
+        MainRefiner.SetVector2("_ScreenSize", screenSize);
+        GL.ActiveTexture(TextureUnit.Texture1);
         GL.BindTexture(TextureTarget.Texture2D, frameTextureID);
+        GL.ActiveTexture(TextureUnit.Texture0);
+        GL.BindTexture(TextureTarget.Texture2D, storedFrameTextureID);
         GL.BindVertexArray(vertexArrayObject);
-        MainRefiner.Enable();
+        GL.DrawElements(PrimitiveType.Triangles, quad.indices.Length, DrawElementsType.UnsignedInt, 0);
+        Camera.SetNoneActive();
+
+        //Store the frame for the next frame
+        GL.BindTexture(TextureTarget.Texture2D, storedFrameTextureID);
+        GL.CopyImageSubData(secondFrameBuffer, ImageTarget.Texture2D, 0, 0, 0, 0, storedFrameTextureID,
+            ImageTarget.Texture2D, 0, 0, 0, 0, (int)screenSize.X, (int)screenSize.Y, 1);
+        
+        //Display Rendering
+        GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+        GL.Viewport(0,0,(int)screenSize.X,(int)screenSize.Y);
+        GL.Clear(ClearBufferMask.ColorBufferBit);
+        GL.Clear(ClearBufferMask.DepthBufferBit);
+        Camera.instances.Span[0].SetActive();
+        TexToScreen.Enable();
+        transformReference = Matrix4.Identity;
+        int transformLocationTwo = TexToScreen.shader.GetUniformLocation("model");
+        GL.UniformMatrix4(transformLocationTwo, true, ref transformReference);
+        GL.ActiveTexture(TextureUnit.Texture0);
+        GL.BindTexture(TextureTarget.Texture2D, secondFrameTextureID);
+        GL.BindVertexArray(vertexArrayObject);
         GL.DrawElements(PrimitiveType.Triangles, quad.indices.Length, DrawElementsType.UnsignedInt, 0);
         Camera.SetNoneActive();
     }
@@ -261,6 +329,7 @@ public class RTRenderer : Renderer
         }
         transformReference = Matrix4.Identity;
         int transformLocation = MainRenderer.shader.GetUniformLocation("model");
+        MainRenderer.Enable();
         GL.UniformMatrix4(transformLocation, true, ref transformReference);
         MainRenderer.SetInt("_Frame", frame++);
         MainRenderer.SetVector3("_CamPos", cam.transform.position);
@@ -277,7 +346,6 @@ public class RTRenderer : Renderer
             i++;
         }
         GL.BindVertexArray(vertexArrayObject);
-        MainRenderer.Enable();
         GL.DrawElements(PrimitiveType.Triangles, quad.indices.Length, DrawElementsType.UnsignedInt, 0);
     }
     
@@ -287,6 +355,7 @@ public class RTRenderer : Renderer
         GL.DeleteBuffer(elementBufferObject);
         GL.DeleteFramebuffer(frameBuffer);
         GL.DeleteTexture(frameTextureID);
+        GL.DeleteTexture(storedFrameTextureID);
         foreach (var openGLShader in shaders) openGLShader.Value.CleanUp();
     }
 }

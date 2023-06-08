@@ -25,7 +25,7 @@ Shader Default/RayTraced [
 	Fragment [
 		#version 330 core
 		#define PI 3.1415926538
-		#define MAX_BOUNCE_COUNT 5
+		#define MAX_BOUNCE_COUNT 20
 		
 		in vec3 color;
 		in vec3 pos;
@@ -61,6 +61,26 @@ Shader Default/RayTraced [
 		
 		
 		//Collection of stolen utility functions from https://github.com/SebLague/Ray-Tracing/blob/main/Assets/Scripts/Shaders/RayTracing.shader
+		// Crude sky colour function for background light
+		vec3 GetEnvironmentLight(Ray ray)
+		{			
+			vec3 GroundColour = vec3(0.35,0.3,0.35);
+			vec3 SkyColourHorizon = vec3(1,1,1);
+			vec3 SkyColourZenith = vec3(0.0788092,0.36480793,0.7264151);
+			float SunFocus = 500;
+			float SunIntensity = 10;
+		
+		
+			float skyGradientT = pow(smoothstep(0, 0.4, ray.dir.y), 0.35);
+			float groundToSkyT = smoothstep(-0.01, 0, ray.dir.y);
+			vec3 skyGradient = mix(SkyColourHorizon, SkyColourZenith, skyGradientT);
+			float sun = max(0,pow(max(0, dot(ray.dir, vec3(1,1,1))), SunFocus) * SunIntensity);
+			sun=0;
+			// Combine ground, sky, and sun
+			vec3 composite = mix(GroundColour, skyGradient, groundToSkyT) + (sun * float(groundToSkyT>=1));
+			return composite;
+		}
+		
 		
 		// PCG (permuted congruential generator). Thanks to:
 		// www.pcg-random.org and www.shadertoy.com/view/XlGcRh
@@ -171,45 +191,6 @@ Shader Default/RayTraced [
 			
 			return info;
 		}
-		/*
-		HitInfo HitBox(Ray ray, vec3 center, vec3 minPos, vec3 maxPos, RTMaterial material) {
-			HitInfo info;
-			vec3 offset = ray.origin - center;
-			info.didHit = false;
-			info.dst = 0;
-			info.hitPoint = vec3(0,0,0);
-			info.normal = vec3(0,0,0);
-			info.material = material;
-			
-			
-			vec3 inverse_dir = 1.0 / ray.dir;
-			vec3 tbot = inverse_dir * (minPos - offset);
-			vec3 ttop = inverse_dir * (maxPos - offset);
-			vec3 tmin = min(ttop, tbot);
-			vec3 tmax = max(ttop, tbot);
-			vec2 traverse = max(tmin.xx, tmin.yz);
-			float traverselow = max(traverse.x, traverse.y);
-			traverse = min(tmax.xx, tmax.yz);
-			float traversehi = min(traverse.x, traverse.y);
-			vec3 box = vec3(float(traversehi > max(traverselow, 0.0)), traversehi, traverselow);
-			float is_box_hit = box.x;
-			float box_t_max = box.y;
-			float box_t_min = box.z;
-			vec3 boxctr = (minPos + maxPos) / 2.0;
-			vec3 box_hit = boxctr - (offset + (box_t_min * ray.dir));
-			box_hit.z = -box_hit.z;
-			box_hit.x = -box_hit.x;
-			box_hit.y = -box_hit.y;
-			vec3 box_intersect_normal = box_hit / max(max(abs(box_hit.x), abs(box_hit.y)), abs(box_hit.z));
-			box_intersect_normal = clamp(box_intersect_normal, vec3(0.0,0.0,0.0), vec3(1.0,1.0,1.0));
-			box_intersect_normal = normalize(floor(box_intersect_normal * 1.0000001));
-			info.normal = box_intersect_normal;
-			info.hitPoint = box_hit;
-			info.didHit = box.x > 0;
-			info.dst = distance(ray.origin,box_hit);
-			return info;
-		}
-		*/
 		
 		//Stolen from https://cmichel.io/howto-raytracer-ray-plane-intersection-theory
 		HitInfo HitPlane(Ray ray, vec3 center, vec3 normal)
@@ -296,6 +277,7 @@ Shader Default/RayTraced [
 					incomingLight += emittedLight * rayColor;
 					rayColor *= material.color;
 				} else {
+					incomingLight += vec4(GetEnvironmentLight(ray) * 0.08,1) * rayColor;
 					break;
 				}
 			}
@@ -318,10 +300,10 @@ Shader Default/RayTraced [
 			ray.dir = normalize(viewPoint - ray.origin);
 			
 			vec4 outcol = vec4(0);
-			for(int i = 0; i < 400; i++) {
+			for(int i = 0; i < 50; i++) {
 				outcol += Trace(ray, state);
 			}
-			outcol /= 20;
+			outcol /= 3;
 			FragColor = outcol;
 		}
 	]

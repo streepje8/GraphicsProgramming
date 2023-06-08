@@ -1,4 +1,4 @@
-Shader Default/ProgressiveRefiner [
+Shader Default/TexToScreen [
 	
 	Vertex [
 		#version 330 core
@@ -29,10 +29,7 @@ Shader Default/ProgressiveRefiner [
 		in vec3 pos;
 		in vec2 texCoord;
 
-		uniform int _Frame;
-		uniform vec2 _ScreenSize;
 		uniform sampler2D texture0;
-		uniform sampler2D texture1;
 		
 		out vec4 FragColor;
 		
@@ -40,12 +37,7 @@ Shader Default/ProgressiveRefiner [
 		
 		void main()
 		{
-			vec2 uv = texCoord;
-			uv.y *= -1;
-			vec4 oldCol = texture(texture0,uv);
-			vec4 newCol = texture(texture1,texCoord);
-			float weight = 1.0 / (_Frame + 1);
-			FragColor = clamp(oldCol * (1 - weight) + newCol * weight,0.0,1.0);
+			FragColor = texture(texture0,texCoord);
 		}
 	]
 ]
