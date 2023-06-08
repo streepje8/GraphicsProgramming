@@ -1,7 +1,6 @@
 ﻿using OpenTK.Graphics.OpenGL4;
 using StbImageSharp;
 using Striped.Engine.Serialization;
-using Striped.Engine.Util;
 
 namespace Striped.Engine.Rendering.TemplateRenderers;
 

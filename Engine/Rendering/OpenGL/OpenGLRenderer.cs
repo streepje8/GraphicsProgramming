@@ -1,11 +1,9 @@
-﻿using Assimp;
-using OpenTK.Graphics.OpenGL4;
+﻿using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using Striped.Engine.BuildinComponents;
 using Striped.Engine.Core;
 using Striped.Engine.Rendering.Core;
 using Striped.Engine.Rendering.TemplateRenderers.Shaders;
-using Striped.Engine.Serialization;
 using Striped.Engine.Util;
 using Camera = Striped.Engine.BuildinComponents.Camera;
 using PrimitiveType = OpenTK.Graphics.OpenGL4.PrimitiveType;

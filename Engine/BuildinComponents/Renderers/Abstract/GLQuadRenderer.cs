@@ -1,7 +1,5 @@
-﻿using System.Diagnostics;
-using OpenTK.Graphics.OpenGL4;
+﻿using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
-using Striped.Engine.BuildinComponents;
 using Striped.Engine.Rendering.TemplateRenderers;
 using Striped.Engine.Rendering.TemplateRenderers.Shaders;
 using Striped.Engine.Util;
