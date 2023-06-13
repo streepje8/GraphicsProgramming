@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using System.Runtime.InteropServices;
+using Newtonsoft.Json;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using Striped.Engine.Core;
@@ -83,6 +84,76 @@ public class GLMaterial : SerializeableObject
     }
 
     private readonly Dictionary<string, int> uniformCache = new Dictionary<string, int>();
+
+    public void SetStructArray<T>(string name, string countName, T[] values) where T : struct
+    {
+        SetInt(countName, values.Length);
+        for (int i = 0; i < values.Length; i++)
+        {
+            SetStruct(name + "[" + i + "]", values[i]);
+        }
+    }
+    
+    //Warning not tested AI code!
+    public void SetStruct<T>(string name, T value, bool suppressWarnings = true) where T : struct
+    {
+        Enable();
+        int buffer = GL.GenBuffer();
+        GL.BindBuffer(BufferTarget.UniformBuffer, buffer);
+        GL.BufferData(BufferTarget.UniformBuffer, Marshal.SizeOf<T>(), ref value, BufferUsageHint.StaticDraw);
+        int endLocation = -1;
+        if (!uniformCache.TryGetValue(name, out int blockIndex))
+        {
+            blockIndex = GL.GetUniformBlockIndex(shader?.Handle() ?? -1, name);
+            uniformCache.Add(name, blockIndex);
+        }
+
+        if (blockIndex != -1)
+        {
+            int bindingPoint = GetAvailableBindingPoint();
+            GL.UniformBlockBinding(shader?.Handle() ?? -1, blockIndex, bindingPoint);
+            GL.BindBufferBase(BufferRangeTarget.UniformBuffer, bindingPoint, buffer);
+        }
+        else if (!suppressWarnings)
+        {
+            Logger.Warn("Uniform block " + name + " not found!");
+        }
+    }
+    
+    #region SetStruct_Util_Functions
+    private int GetAvailableBindingPoint()
+    {
+        int maxBindingPoints;
+        GL.GetInteger(GetPName.MaxUniformBufferBindings, out maxBindingPoints);
+        for (int i = 0; i < maxBindingPoints; i++)
+        {
+            if (!IsBindingPointUsed(i))
+            {
+                return i;
+            }
+        }
+        throw new Exception("No available binding points for uniform blocks.");
+    }
+    
+    private bool IsBindingPointUsed(int bindingPoint)
+    {
+        int maxBindingPoints;
+        GL.GetInteger(GetPName.MaxUniformBufferBindings, out maxBindingPoints);
+
+        for (int i = 0; i < maxBindingPoints; i++)
+        {
+            int activeBinding;
+            GL.GetInteger(GetIndexedPName.UniformBufferBinding, i, out activeBinding);
+
+            if (activeBinding == bindingPoint)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+    #endregion
+
 
     public void SetMatrix4(string name, Matrix4 value, bool supressWarnings = true)
     {

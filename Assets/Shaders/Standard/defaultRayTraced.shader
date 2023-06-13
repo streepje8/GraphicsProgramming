@@ -25,7 +25,8 @@ Shader Default/RayTraced [
 	Fragment [
 		#version 330 core
 		#define PI 3.1415926538
-		#define MAX_BOUNCE_COUNT 20
+		#define MAX_BOUNCE_COUNT 30
+		#define RAYS_PER_PIXEL 80
 		
 		in vec3 color;
 		in vec3 pos;
@@ -230,7 +231,7 @@ Shader Default/RayTraced [
 			RTMaterial light;
 			light.color = vec4(0,0,0,0);
 			light.emissionColor = vec4(1,1,1,1);
-			light.emissionStrength = 2;
+			light.emissionStrength = 1;
 			light.specularProbability = 0;
 			light.smoothness = 0;
 			
@@ -238,17 +239,19 @@ Shader Default/RayTraced [
 			ground.color = vec4(0.6,1,1,1);
 			
 			RTMaterial sphere;
-			sphere.color = vec4(0.2,0.2,1,1);
-			sphere.specularProbability = 1;
-			sphere.smoothness = 1;
+			sphere.color = vec4(0.43,0.43,0.43,1);
+			sphere.specularProbability = 0.6;
+			sphere.smoothness = 0.9;
 			RTMaterial sphereT;
 			sphereT.color = vec4(0.2,1,0.2,1);
 			sphereT.specularProbability = 1;
 			sphereT.smoothness = 1;
 			RTMaterial sphereTT;
-			sphereTT.color = vec4(1,0.2,0.2,1);
+			sphereTT.color = vec4(0,0,0,1);
+			sphereTT.emissionColor = vec4(1,0.2,0.2,1);
 			sphereTT.specularProbability = 0;
 			sphereTT.smoothness = 0;
+			sphereTT.emissionStrength = 0.5;
 			
 			//Loop through all objects
 			
@@ -258,7 +261,7 @@ Shader Default/RayTraced [
 			if(hit.didHit && hit.dst < closest.dst) closest = hit;
 			hit = HitSphere(ray, vec3(2,0,-4), 1, sphere);
 			if(hit.didHit && hit.dst < closest.dst) closest = hit;
-			hit = HitSphere(ray, vec3(0.5,0,-3), 0.7, sphereT);
+			hit = HitSphere(ray, vec3(0.5,0,-1), 0.7, sphereT);
 			if(hit.didHit && hit.dst < closest.dst) closest = hit;
 			hit = HitSphere(ray, vec3(-2,0.5,-3), 1.3, sphereTT);
 			if(hit.didHit && hit.dst < closest.dst) closest = hit;
@@ -289,7 +292,7 @@ Shader Default/RayTraced [
 					incomingLight += emittedLight * rayColor;
 					rayColor *= material.color;
 				} else {
-					incomingLight += vec4(GetEnvironmentLight(ray) * 0.08,1) * rayColor;
+					//incomingLight += vec4(GetEnvironmentLight(ray) * 0.08,1) * rayColor;
 					break;
 				}
 			}
@@ -307,15 +310,22 @@ Shader Default/RayTraced [
 			uint pixelIndex = uint(floor((texCoord.y * uint(_ScreenSize.y)) * uint(_ScreenSize.x) + texCoord.x * uint(_ScreenSize.x)));
 			uint state = pixelIndex + uint(_Frame) * 719393u;
 			
-			Ray ray;
-			ray.origin = _CamPos;
-			ray.dir = normalize(viewPoint - ray.origin);
+			vec3 camRight = normalize((vec4(1,0,0, 1) * _CamLocalToWorldMatrix).xyz);
+			vec3 camUp = normalize((vec4(0,1,0, 1) * _CamLocalToWorldMatrix).xyz);
+			vec3 camForward = normalize((vec4(0,0,1, 1) * _CamLocalToWorldMatrix).xyz);
+			
+			
+			float DivergeStrength = 0.3f;
 			
 			vec4 outcol = vec4(0);
-			for(int i = 0; i < 50; i++) {
+			for(int i = 0; i < RAYS_PER_PIXEL; i++) {
+				Ray ray;
+				ray.origin = _CamPos;
+				vec2 jitter = RandomPointInCircle(state) * DivergeStrength / _ScreenSize.x;
+				vec3 jitteredViewPoint = viewPoint + camRight * jitter.x + camUp * jitter.y;
+				ray.dir = normalize(jitteredViewPoint - ray.origin);
 				outcol += Trace(ray, state);
 			}
-			outcol /= 3;
 			FragColor = outcol;
 		}
 	]
