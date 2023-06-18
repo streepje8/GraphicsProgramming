@@ -92,7 +92,7 @@ public class RaytracingDemo : Game
         if (Input.GetKey(Keys.Down))
         {
             camRotX -= cameraRotationSpeed * Time.deltaTime;
-            ((RTRenderer)GameSession.ActiveSession.Window.ActiveRenderer).ResetToFirstFrame();
+           ((RTRenderer)GameSession.ActiveSession.Window.ActiveRenderer).ResetToFirstFrame();
         }
         
         camera.transform.rotation = Quaternion.FromEulerAngles(new Vector3(0, camRotY, 0)) * Quaternion.FromEulerAngles(new Vector3(camRotX,0,0));

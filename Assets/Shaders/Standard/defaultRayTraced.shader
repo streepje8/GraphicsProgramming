@@ -25,9 +25,9 @@ Shader Default/RayTraced [
 	Fragment [
 		#version 330 core
 		#define PI 3.1415926538
-		#define MAX_BOUNCE_COUNT 30
+		#define MAX_BOUNCE_COUNT 50
 		#define RAYS_PER_PIXEL 80
-		
+
 		in vec3 color;
 		in vec3 pos;
 		in vec2 texCoord;
@@ -244,27 +244,99 @@ Shader Default/RayTraced [
 			sphere.smoothness = 0.9;
 			RTMaterial sphereT;
 			sphereT.color = vec4(0.2,1,0.2,1);
-			sphereT.specularProbability = 1;
-			sphereT.smoothness = 1;
+			sphereT.specularProbability = 0.7;
+			sphereT.smoothness = 0.7;
 			RTMaterial sphereTT;
-			sphereTT.color = vec4(0,0,0,1);
-			sphereTT.emissionColor = vec4(1,0.2,0.2,1);
-			sphereTT.specularProbability = 0;
-			sphereTT.smoothness = 0;
-			sphereTT.emissionStrength = 0.5;
+			sphereTT.color = vec4(1,0.2,0.2,1);
+			sphereTT.emissionColor = vec4(0,0,0,1);
+			sphereTT.specularProbability = 0.7;
+			sphereTT.smoothness = 0.7;
+			sphereTT.emissionStrength = 0;
 			
 			//Loop through all objects
 			
-			HitInfo hit = HitSphere(ray, vec3(3,3,-3), 0.5, light);
+			HitInfo hit = HitSphere(ray, vec3(3,3,-5), 0.5, light);
 			if(hit.didHit && hit.dst < closest.dst) closest = hit;
 			hit = HitBox(ray, vec3(0,-51,0), vec3(-50), vec3(50), ground); //
 			if(hit.didHit && hit.dst < closest.dst) closest = hit;
 			hit = HitSphere(ray, vec3(2,0,-4), 1, sphere);
 			if(hit.didHit && hit.dst < closest.dst) closest = hit;
-			hit = HitSphere(ray, vec3(0.5,0,-1), 0.7, sphereT);
+			hit = HitSphere(ray, vec3(-0.5,0,-1), 0.7, sphereT);
 			if(hit.didHit && hit.dst < closest.dst) closest = hit;
 			hit = HitSphere(ray, vec3(-2,0.5,-3), 1.3, sphereTT);
 			if(hit.didHit && hit.dst < closest.dst) closest = hit;
+			
+			
+			/* //Box thingy scene
+			//Light
+			RTMaterial light;
+			light.color = vec4(0,0,0,0);
+			light.emissionColor = vec4(1,1,1,1);
+			light.emissionStrength = 1;
+			light.specularProbability = 0;
+			light.smoothness = 0;
+		
+			HitInfo hit = HitSphere(ray, vec3(0,2.1,0), 0.2, light);
+			if(hit.didHit && hit.dst < closest.dst) closest = hit;
+			
+			//Ceiling
+			RTMaterial white;
+			white.color = vec4(1);
+			white.emissionColor = vec4(0);
+			white.emissionStrength = 0;
+			white.specularProbability = 0;
+			white.smoothness = 0;
+			hit = HitSphere(ray, vec3(0,32,0), 30, white);
+			if(hit.didHit && hit.dst < closest.dst) closest = hit;
+			
+			//Floor
+			hit = HitSphere(ray, vec3(0,-30,0), 30, white);
+			if(hit.didHit && hit.dst < closest.dst) closest = hit;
+			
+			//Walls
+			RTMaterial red;
+			red.color = vec4(1,0.2,0.2,1);
+			red.emissionColor = vec4(0);
+			red.emissionStrength = 0;
+			red.specularProbability = 0;
+			red.smoothness = 0;
+			RTMaterial blue;
+			blue.color = vec4(0.2,0.2,1,1);
+			blue.emissionColor = vec4(0);
+			blue.emissionStrength = 0;
+			blue.specularProbability = 0;
+			blue.smoothness = 0;
+			RTMaterial green;
+			green.color = vec4(0.2,1,0.2,1);
+			green.emissionColor = vec4(0);
+			green.emissionStrength = 0;
+			green.specularProbability = 0;
+			green.smoothness = 0;
+			RTMaterial purple;
+			purple.color = vec4(0.6,0.2,0.8,1);
+			purple.emissionColor = vec4(0);
+			purple.emissionStrength = 0;
+			purple.specularProbability = 0;
+			purple.smoothness = 0;
+			
+			hit = HitSphere(ray, vec3(31,1,0), 30, red);
+			if(hit.didHit && hit.dst < closest.dst) closest = hit;
+			hit = HitSphere(ray, vec3(-31,1,0), 30, blue);
+			if(hit.didHit && hit.dst < closest.dst) closest = hit;
+			hit = HitSphere(ray, vec3(0,1,-31), 30, green);
+			if(hit.didHit && hit.dst < closest.dst) closest = hit;
+			hit = HitSphere(ray, vec3(0,1,31), 30, purple);
+			if(hit.didHit && hit.dst < closest.dst) closest = hit;
+			
+			//Subject
+			RTMaterial subject;
+			subject.color = vec4(1);
+			subject.emissionColor = vec4(0);
+			subject.emissionStrength = 0;
+			subject.specularProbability = 1;
+			subject.smoothness = 0.8;
+			hit = HitSphere(ray, vec3(0,1,0), 0.2, subject);
+			if(hit.didHit && hit.dst < closest.dst) closest = hit; */
 			
 			return closest;
 		}
@@ -292,7 +364,7 @@ Shader Default/RayTraced [
 					incomingLight += emittedLight * rayColor;
 					rayColor *= material.color;
 				} else {
-					//incomingLight += vec4(GetEnvironmentLight(ray) * 0.08,1) * rayColor;
+					incomingLight += vec4(GetEnvironmentLight(ray) * 0.02,1) * rayColor;
 					break;
 				}
 			}
@@ -326,6 +398,7 @@ Shader Default/RayTraced [
 				ray.dir = normalize(jitteredViewPoint - ray.origin);
 				outcol += Trace(ray, state);
 			}
+			
 			FragColor = outcol;
 		}
 	]

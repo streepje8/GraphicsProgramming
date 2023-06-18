@@ -43,6 +43,12 @@ Shader Default/ProgressiveRefiner [
 			vec2 uv = texCoord;
 			uv.y *= -1;
 			vec4 oldCol = texture(texture0,uv);
+			
+			int size = 5;
+			float separation = 3;
+			float threshold = 0.4;
+			float amount = 1;
+			
 			vec4 newCol = texture(texture1,texCoord);
 			float weight = 1.0 / (_Frame + 1);
 			FragColor = clamp(oldCol * (1 - weight) + newCol * weight,0.0,1.0);
