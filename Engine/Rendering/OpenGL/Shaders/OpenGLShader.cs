@@ -176,4 +176,9 @@ public class OpenGLShader : SerializeableObject
         BindSource();
         CompileAndLoad();
     }
+
+    public int Handle()
+    {
+        return handle;
+    }
 }

@@ -1,6 +1,5 @@
 ﻿using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
-using Striped.Engine.BuildinComponents;
 using Striped.Engine.Rendering.TemplateRenderers;
 using Striped.Engine.Rendering.TemplateRenderers.Shaders;
 using Striped.Engine.Util;
@@ -60,7 +59,7 @@ public class GLMeshRenderer : RenderComponent
 
         //Tell the gpu about what the data is
         //Get the locations in the shader
-        OpenGLShader shader = materal.shader;
+        OpenGLShader? shader = materal.shader;
         int pos = -1, uv = -1, normal = -1, color = -1;
         
         int offset = 0;

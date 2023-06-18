@@ -1,6 +1,5 @@
 ﻿using Assimp;
 using Assimp.Configs;
-using OpenTK.Mathematics;
 using Striped.Engine.Rendering.TemplateRenderers;
 using Striped.Engine.Serialization;
 

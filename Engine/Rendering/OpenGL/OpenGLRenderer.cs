@@ -1,11 +1,9 @@
-﻿using Assimp;
-using OpenTK.Graphics.OpenGL4;
+﻿using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using Striped.Engine.BuildinComponents;
 using Striped.Engine.Core;
 using Striped.Engine.Rendering.Core;
 using Striped.Engine.Rendering.TemplateRenderers.Shaders;
-using Striped.Engine.Serialization;
 using Striped.Engine.Util;
 using Camera = Striped.Engine.BuildinComponents.Camera;
 using PrimitiveType = OpenTK.Graphics.OpenGL4.PrimitiveType;
@@ -48,18 +46,27 @@ public class OpenGLRenderer : Renderer
         return shader;
     }
     
-    public static void AddShaderInternal(OpenGLShader shader)
+    public static void AddShaderInternal(OpenGLShader? shader)
     {
         shaders.Add(shader.name,shader);
     }
 
-    public static OpenGLShader? GetShader(string name)
+    public virtual OpenGLShader? GetShader(string name)
     {
         if (string.IsNullOrEmpty(name)) return null;
         if (shaders.TryGetValue(name, out OpenGLShader? shader)) return shader;
         return null;
     }
     
+    /*
+     public static OpenGLShader? GetShader(string name)
+        {
+            if (string.IsNullOrEmpty(name)) return null;
+            if (shaders.TryGetValue(name, out OpenGLShader? shader)) return shader;
+            return null;
+        }
+     */
+
     public override void OnLoad()
     {
         CreateShader(Application.AssetsFolder + "/Shaders/Standard/errorShader.shader");
@@ -144,7 +151,7 @@ public class OpenGLRenderer : Renderer
 
         //Tell the gpu about what the data is
         //Get the locations in the shader
-        OpenGLShader shader = SkyboxMaterial.shader;
+        OpenGLShader? shader = SkyboxMaterial.shader;
         int pos = -1, uv = -1, normal = -1, color = -1;
         
         int offset = 0;
@@ -207,5 +214,12 @@ public class OpenGLRenderer : Renderer
     {
         GL.DeleteBuffer(skyboxVBO);
         GL.DeleteBuffer(skyboxEBO);
+    }
+
+    public static OpenGLShader GetShaderStatic(string name)
+    {
+        if (string.IsNullOrEmpty(name)) return null;
+        if (shaders.TryGetValue(name, out OpenGLShader? shader)) return shader;
+        return null;
     }
 }

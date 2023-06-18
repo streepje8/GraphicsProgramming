@@ -1,4 +1,4 @@
-Shader Default/Diffuse [
+Shader Default/Lit [
 	
 	Vertex [
 		#version 330 core
@@ -42,7 +42,7 @@ Shader Default/Diffuse [
 		{
 			vec3 lightDir = vec3(1,1,1);
 			float light = clamp((dot(normalize(normal),lightDir) + 1) / 2,0.2,1); //Ambient + diffuse
-			vec4 outputCol = vec4(light);
+			vec4 outputCol = texture(texture0, texCoord) * vec4(light);
 			if(dot(normalize(normal),lightDir) > 1.95) FragColor = vec4(1); //Specular
 			else FragColor = outputCol;
 		}
