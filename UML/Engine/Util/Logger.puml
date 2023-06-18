@@ -1,0 +1,19 @@
+@startuml
+class LoggingContext {
+    + stackTrace : string
+    + LoggingContext(skipCount:int)
+    + <<override>> ToString() : string
+}
+class Logger <<static>> {
+    + {static} GatherContext() : LoggingContext
+    + {static} Log(message:object, context:LoggingContext?) : void
+    + {static} Info(message:object, context:LoggingContext?) : void
+    + {static} Warn(message:object, context:LoggingContext?) : void
+    + {static} Err(message:object, context:LoggingContext?) : void
+    + {static} Info(message:string, context:LoggingContext?) : void
+    + {static} Warn(message:string, context:LoggingContext?) : void
+    + {static} Err(message:string, context:LoggingContext?) : void
+    + {static} Except(e:Exception, context:LoggingContext?) : void
+}
+LoggingContext --> "currentStackFrame" StackFrame
+@enduml

@@ -1,0 +1,8 @@
+@startuml
+class Time <<static>> {
+    + {static} deltaTime : float <<get>>
+    + {static} time : float <<get>>
+    + {static} Tick() : void
+    + {static} Reset() : void
+}
+@enduml

@@ -1,0 +1,17 @@
+@startuml
+class ComponentBase {
+    + EntityID : int <<get>>
+    + ComponentID : int <<get>>
+    + nextComponentID : int
+    + previousComponentID : int
+    + transform : Transform?
+    + entity : Entity?
+    + SetID(id:int) : void
+    + isActive : bool = true
+    + <<virtual>> IsExclusiveComponent : bool <<get>> = false
+    + SetEntity(e:Entity?) : void
+    + <<virtual>> OnCreate() : void
+    + <<virtual>> Update() : void
+    + <<virtual>> OnDestroy() : void
+}
+@enduml

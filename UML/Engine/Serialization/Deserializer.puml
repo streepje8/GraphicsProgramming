@@ -1,0 +1,5 @@
+@startuml
+class Deserializer {
+    + {static} Deserialize(data:string) : T
+}
+@enduml

@@ -1,0 +1,15 @@
+@startuml
+enum GLMeshDataInfo {
+    HasVertecies= 1,
+    HasIndices= 2,
+    HasUVs= 4,
+    HasNormals= 8,
+    HasVertexColors= 16,
+}
+class GLMeshData <<struct>> {
+    + GLMeshData(vertices:float[]?, indices:int[]?, uvs:float[]?, normals:float[]?, vertexColors:float[]?)
+    + GetMeshDataInfo() : byte
+    + GetStride() : int
+    + GetMeshData() : float[]
+}
+@enduml

@@ -1,0 +1,7 @@
+@startuml
+class TerrainGenerator {
+}
+class "Component`1"<T> {
+}
+"Component`1" "<TerrainGenerator>" <|-- TerrainGenerator
+@enduml

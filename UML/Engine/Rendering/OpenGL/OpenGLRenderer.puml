@@ -1,0 +1,16 @@
+@startuml
+class OpenGLRenderer {
+    + {static} RenderSkyBox : bool <<get>> <<set>> = true
+    + <<override>> OnResize(engineWindow:EngineWindow, width:int, height:int) : void
+    + CreateShader(filePath:string) : OpenGLShader?
+    + {static} AddShaderInternal(shader:OpenGLShader?) : void
+    + <<virtual>> GetShader(name:string) : OpenGLShader?
+    + <<override>> OnLoad() : void
+    + <<override>> OnRenderFrame() : void
+    + <<override>> OnUnLoad() : void
+    + {static} GetShaderStatic(name:string) : OpenGLShader
+}
+Renderer <|-- OpenGLRenderer
+OpenGLRenderer --> "SkyboxMaterial" GLMaterial
+OpenGLRenderer --> "ClearColor" Vector4
+@enduml

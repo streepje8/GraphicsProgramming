@@ -1,0 +1,11 @@
+@startuml
+class "Component`1"<T> {
+}
+class "Memory`1"<T> {
+}
+class "Stack`1"<T> {
+}
+ComponentBase <|-- "Component`1"
+"Component`1" o-> "instances<T>" "Memory`1"
+"Component`1" o-> "AvailbleInstanceIndexes<int>" "Stack`1"
+@enduml

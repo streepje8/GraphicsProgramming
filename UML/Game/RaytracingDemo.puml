@@ -1,0 +1,17 @@
+@startuml
+class RaytracingDemo {
+    + <<override>> Title : string <<get>> = "Raytracing Demo"
+    + <<override>> Width : int <<get>> = 800
+    + <<override>> Height : int <<get>> = 800
+    + cameraSpeed : float = 5f
+    + cameraRotationSpeed : float = 2f
+    + camRotX : float = 0
+    + camRotY : float = 0
+    + <<override>> Init() : void
+    + <<override>> Update() : void
+    + <<override>> OnApplicationQuit() : void
+}
+Game <|-- RaytracingDemo
+RaytracingDemo o-> "Renderer" Type
+RaytracingDemo --> "camera" Entity
+@enduml

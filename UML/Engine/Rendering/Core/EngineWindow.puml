@@ -1,0 +1,12 @@
+@startuml
+class EngineWindow <<unsafe>> {
+    + FPS : int <<set>>
+    + UPS : int <<set>>
+    + EngineWindow(renderer:Renderer, width:int, height:int, title:string)
+    + Run() : void
+    + Clean() : void
+    + Initialize() : void
+}
+NativeWindow <|-- EngineWindow
+EngineWindow --> "ActiveRenderer" Renderer
+@enduml

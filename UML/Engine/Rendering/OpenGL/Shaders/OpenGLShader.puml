@@ -1,0 +1,21 @@
+@startuml
+class StringBlock <<struct>> {
+    + name : string
+    + content : string
+}
+class OpenGLShader {
+    + name : string
+    + OpenGLShader(filePath:string)
+    + BindSource() : void
+    + CompileAndLoad() : void
+    + Enable() : void
+    + CleanUp() : void
+    + GetUniformLocation(name:string) : int
+    + GetAttribLocation(name:string) : int
+    + BindAttribLocation(index:int, name:string) : void
+    + <<override>> Serialize() : string
+    + <<override>> Deserialize(data:string) : void
+    + Handle() : int
+}
+SerializeableObject <|-- OpenGLShader
+@enduml

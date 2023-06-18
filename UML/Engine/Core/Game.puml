@@ -1,0 +1,11 @@
+@startuml
+class Game {
+    + <<virtual>> Title : string <<get>> = "Striped Window"
+    + <<virtual>> Width : int <<get>> = 800
+    + <<virtual>> Height : int <<get>> = 400
+    + <<virtual>> Init() : void
+    + <<virtual>> Update() : void
+    + <<virtual>> OnApplicationQuit() : void
+}
+Game o-> "Renderer" Type
+@enduml

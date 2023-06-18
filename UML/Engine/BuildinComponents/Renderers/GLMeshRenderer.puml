@@ -1,0 +1,13 @@
+@startuml
+class GLMeshRenderer {
+    + SetMesh(mesh:GLMesh) : void
+    + <<override>> OnCreate() : void
+    + ReloadMesh() : void
+    + SetMaterial(mat:GLMaterial) : void
+    + <<override>> OnRender(cam:Camera) : void
+    + <<override>> OnDestroy() : void
+}
+RenderComponent <|-- GLMeshRenderer
+GLMeshRenderer o-> "materal" GLMaterial
+GLMeshRenderer o-> "Mesh" GLMesh
+@enduml

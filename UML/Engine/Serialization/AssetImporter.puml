@@ -1,0 +1,6 @@
+@startuml
+class AssetImporter {
+    + {static} ExportAsset(folder:string, filename:string, asset:SerializeableObject) : void
+    + {static} ImportAsset(path:string) : T
+}
+@enduml

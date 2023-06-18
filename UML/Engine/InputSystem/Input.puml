@@ -1,0 +1,10 @@
+@startuml
+class Input <<static>> {
+    + {static} UpdateKeyboardState(newState:KeyboardState?) : void
+    + {static} GetKey(key:Keys) : bool
+    + {static} GetKeyDown(key:Keys) : bool
+    + {static} GetKeyUp(key:Keys) : bool
+    + {static} AnyKey() : bool
+    + {static} WasKeyDown(key:Keys) : bool
+}
+@enduml

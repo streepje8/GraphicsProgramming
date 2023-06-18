@@ -1,0 +1,24 @@
+@startuml
+class InteractiveEnvironment {
+    + InteractiveEnvironment()
+    + CreateEntity(addTransform:bool) : Entity
+    + GetEntity(id:int) : Entity
+    + GetEntitySpan() : Span<Entity>
+    + GetEntitySpan(start:int, end:int) : Span<Entity>
+    + GetEntitySpanNoEmpty() : Span<Entity>
+    + DestroyEntity(e:Entity) : void
+    + AddComponent(e:Entity?) : T
+    + DestroyComponent(componentID:int, alertEntity:bool) : void
+    + Destroy() : void
+    + GetComponent(entity:Entity) : T
+    + GetComponents(entity:Entity) : List<T>
+    + GetAllComponentsInScene() : Span<T>
+    + {static} GetAllComponents() : Span<T>
+}
+class "Memory`1"<T> {
+}
+class "Dictionary`2"<T1,T2> {
+}
+InteractiveEnvironment --> "entities<Entity>" "Memory`1"
+InteractiveEnvironment o-> "allComponents<Type,Memory<ComponentBase>>" "Dictionary`2"
+@enduml

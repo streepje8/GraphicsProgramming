@@ -1,0 +1,9 @@
+@startuml
+abstract class Renderer {
+    + {abstract} OnRenderFrame() : void
+    + <<virtual>> OnLoad() : void
+    + <<virtual>> OnUnLoad() : void
+    + <<virtual>> OnUpdate() : void
+    + <<virtual>> OnResize(engineWindow:EngineWindow, width:int, height:int) : void
+}
+@enduml

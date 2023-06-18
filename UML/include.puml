@@ -1,0 +1,359 @@
+@startuml
+class TerrainGenerator {
+}
+class "Component`1"<T> {
+}
+"Component`1" "<TerrainGenerator>" <|-- TerrainGenerator
+class RaytracingDemo {
+    + <<override>> Title : string <<get>> = "Raytracing Demo"
+    + <<override>> Width : int <<get>> = 800
+    + <<override>> Height : int <<get>> = 800
+    + cameraSpeed : float = 5f
+    + cameraRotationSpeed : float = 2f
+    + camRotX : float = 0
+    + camRotY : float = 0
+    + <<override>> Init() : void
+    + <<override>> Update() : void
+    + <<override>> OnApplicationQuit() : void
+}
+Game <|-- RaytracingDemo
+RaytracingDemo o-> "Renderer" Type
+RaytracingDemo --> "camera" Entity
+class SerializeableObject {
+    + <<virtual>> Serialize() : string
+    + <<virtual>> Deserialize(data:string) : void
+}
+class AssetImporter {
+    + {static} ExportAsset(folder:string, filename:string, asset:SerializeableObject) : void
+    + {static} ImportAsset(path:string) : T
+}
+class Deserializer {
+    + {static} Deserialize(data:string) : T
+}
+class LoggingContext {
+    + stackTrace : string
+    + LoggingContext(skipCount:int)
+    + <<override>> ToString() : string
+}
+class Logger <<static>> {
+    + {static} GatherContext() : LoggingContext
+    + {static} Log(message:object, context:LoggingContext?) : void
+    + {static} Info(message:object, context:LoggingContext?) : void
+    + {static} Warn(message:object, context:LoggingContext?) : void
+    + {static} Err(message:object, context:LoggingContext?) : void
+    + {static} Info(message:string, context:LoggingContext?) : void
+    + {static} Warn(message:string, context:LoggingContext?) : void
+    + {static} Err(message:string, context:LoggingContext?) : void
+    + {static} Except(e:Exception, context:LoggingContext?) : void
+}
+LoggingContext --> "currentStackFrame" StackFrame
+class Application <<static>> {
+    + {static} Window : EngineWindow? <<get>> = null
+    + {static} AssetsFolder : string = "../../../Assets"
+    + {static} SetWindow(win:EngineWindow) : void
+    + {static} Quit() : void
+}
+class Time <<static>> {
+    + {static} deltaTime : float <<get>>
+    + {static} time : float <<get>>
+    + {static} Tick() : void
+    + {static} Reset() : void
+}
+class Extensions <<static>> {
+    + {static} UnityMultiply(lhs:Quaternion, rhs:Quaternion) : Quaternion
+}
+enum DefaultMesh {
+    Cube,
+    Plane,
+    Sphere,
+    Capsule,
+    Torus,
+}
+class GLModelLoader {
+    + {static} LoadDefaultMesh(mesh:DefaultMesh) : GLMesh
+    + {static} LoadModel(path:string) : GLMesh
+}
+class "Component`1"<T> {
+}
+class "Memory`1"<T> {
+}
+class "Stack`1"<T> {
+}
+ComponentBase <|-- "Component`1"
+"Component`1" o-> "instances<T>" "Memory`1"
+"Component`1" o-> "AvailbleInstanceIndexes<int>" "Stack`1"
+class Game {
+    + <<virtual>> Title : string <<get>> = "Striped Window"
+    + <<virtual>> Width : int <<get>> = 800
+    + <<virtual>> Height : int <<get>> = 400
+    + <<virtual>> Init() : void
+    + <<virtual>> Update() : void
+    + <<virtual>> OnApplicationQuit() : void
+}
+Game o-> "Renderer" Type
+class Program {
+    + {static} Main(args:string[]) : void
+}
+class ComponentBase {
+    + EntityID : int <<get>>
+    + ComponentID : int <<get>>
+    + nextComponentID : int
+    + previousComponentID : int
+    + transform : Transform?
+    + entity : Entity?
+    + SetID(id:int) : void
+    + isActive : bool = true
+    + <<virtual>> IsExclusiveComponent : bool <<get>> = false
+    + SetEntity(e:Entity?) : void
+    + <<virtual>> OnCreate() : void
+    + <<virtual>> Update() : void
+    + <<virtual>> OnDestroy() : void
+}
+class InteractiveEnvironment {
+    + InteractiveEnvironment()
+    + CreateEntity(addTransform:bool) : Entity
+    + GetEntity(id:int) : Entity
+    + GetEntitySpan() : Span<Entity>
+    + GetEntitySpan(start:int, end:int) : Span<Entity>
+    + GetEntitySpanNoEmpty() : Span<Entity>
+    + DestroyEntity(e:Entity) : void
+    + AddComponent(e:Entity?) : T
+    + DestroyComponent(componentID:int, alertEntity:bool) : void
+    + Destroy() : void
+    + GetComponent(entity:Entity) : T
+    + GetComponents(entity:Entity) : List<T>
+    + GetAllComponentsInScene() : Span<T>
+    + {static} GetAllComponents() : Span<T>
+}
+class "Memory`1"<T> {
+}
+class "Dictionary`2"<T1,T2> {
+}
+InteractiveEnvironment --> "entities<Entity>" "Memory`1"
+InteractiveEnvironment o-> "allComponents<Type,Memory<ComponentBase>>" "Dictionary`2"
+class GameSession {
+    + {static} ActiveSession : GameSession? <<get>> <<set>>
+    + CreateEnvironment() : InteractiveEnvironment?
+    + UnloadEnvironment(environment:InteractiveEnvironment?) : void
+    + GameSession(game:Game)
+    + CloseSession() : void
+    + BindWindow(window:EngineWindow) : void
+    + UnloadAllEnvironments() : void
+}
+class "List`1"<T> {
+}
+GameSession --> "Game" Game
+GameSession --> "Window" EngineWindow
+GameSession o-> "LoadedEnvironments<InteractiveEnvironment?>" "List`1"
+class RuntimeObject {
+    + name : string = "BOI"
+}
+SerializeableObject <|-- RuntimeObject
+class Entity {
+    + ID : int <<get>>
+    + nextEntityID : int
+    + previousEntityID : int
+    + transform : Transform?
+    + Entity(id:int, environment:InteractiveEnvironment)
+    + GetEnvironment() : InteractiveEnvironment
+    + Destroy() : void
+    + AddComponent() : T?
+    + GetComponent() : T
+    + GetComponents() : Span<T>
+    + RemoveComponent(component:T) : void
+    + Update() : void
+    + SetTransform(transform:Transform?) : void
+    + <<override>> Serialize() : string
+    + <<override>> Deserialize(data:string) : void
+}
+class "Dictionary`2"<T1,T2> {
+}
+RuntimeObject <|-- Entity
+Entity o-> "components<Type,int[]>" "Dictionary`2"
+class Input <<static>> {
+    + {static} UpdateKeyboardState(newState:KeyboardState?) : void
+    + {static} GetKey(key:Keys) : bool
+    + {static} GetKeyDown(key:Keys) : bool
+    + {static} GetKeyUp(key:Keys) : bool
+    + {static} AnyKey() : bool
+    + {static} WasKeyDown(key:Keys) : bool
+}
+class RTRenderer {
+    + {static} SkyboxMaterial : GLMaterial? <<get>> <<set>>
+    + {static} MainRenderer : GLMaterial? <<get>>
+    + {static} MainRefiner : GLMaterial? <<get>>
+    + {static} TexToScreen : GLMaterial? <<get>>
+    + <<override>> OnResize(engineWindow:EngineWindow, width:int, height:int) : void
+    + {static} AddShaderInternal(shader:OpenGLShader) : void
+    + {static} GetShader(name:string) : OpenGLShader?
+    + <<override>> OnLoad() : void
+    + ResetToFirstFrame() : void
+    + <<override>> OnRenderFrame() : void
+    + <<override>> OnUnLoad() : void
+}
+Renderer <|-- RTRenderer
+RTRenderer --> "ClearColor" Vector4
+class EngineWindow <<unsafe>> {
+    + FPS : int <<set>>
+    + UPS : int <<set>>
+    + EngineWindow(renderer:Renderer, width:int, height:int, title:string)
+    + Run() : void
+    + Clean() : void
+    + Initialize() : void
+}
+NativeWindow <|-- EngineWindow
+EngineWindow --> "ActiveRenderer" Renderer
+abstract class Renderer {
+    + {abstract} OnRenderFrame() : void
+    + <<virtual>> OnLoad() : void
+    + <<virtual>> OnUnLoad() : void
+    + <<virtual>> OnUpdate() : void
+    + <<virtual>> OnResize(engineWindow:EngineWindow, width:int, height:int) : void
+}
+class GLTexture2D {
+    + GLTexture2D(path:string)
+    + SetFilterMode(mode:TextureMinFilter, bind:bool) : void
+    + SetWrapMode(mode:TextureWrapMode, bind:bool) : void
+    + Bind() : void
+    + <<override>> Serialize() : string
+    + <<override>> Deserialize(data:string) : void
+}
+SerializeableObject <|-- GLTexture2D
+enum GLMeshDataInfo {
+    HasVertecies= 1,
+    HasIndices= 2,
+    HasUVs= 4,
+    HasNormals= 8,
+    HasVertexColors= 16,
+}
+class GLMeshData <<struct>> {
+    + GLMeshData(vertices:float[]?, indices:int[]?, uvs:float[]?, normals:float[]?, vertexColors:float[]?)
+    + GetMeshDataInfo() : byte
+    + GetStride() : int
+    + GetMeshData() : float[]
+}
+class OpenGLRenderer {
+    + {static} RenderSkyBox : bool <<get>> <<set>> = true
+    + <<override>> OnResize(engineWindow:EngineWindow, width:int, height:int) : void
+    + CreateShader(filePath:string) : OpenGLShader?
+    + {static} AddShaderInternal(shader:OpenGLShader?) : void
+    + <<virtual>> GetShader(name:string) : OpenGLShader?
+    + <<override>> OnLoad() : void
+    + <<override>> OnRenderFrame() : void
+    + <<override>> OnUnLoad() : void
+    + {static} GetShaderStatic(name:string) : OpenGLShader
+}
+Renderer <|-- OpenGLRenderer
+OpenGLRenderer --> "SkyboxMaterial" GLMaterial
+OpenGLRenderer --> "ClearColor" Vector4
+class SerializedMaterial <<struct>> {
+    + shaderName : string
+    + shader : string
+}
+class GLMaterial {
+    + shader : OpenGLShader?
+    + GLMaterial(shaderName:string)
+    + GLMaterial(shader:OpenGLShader)
+    + Enable() : void
+    + <<override>> Serialize() : string
+    + <<override>> Deserialize(data:string) : void
+    + SetStructArray(name:string, countName:string, values:T[]) : void
+    + SetStruct(name:string, value:T, suppressWarnings:bool) : void
+    + SetMatrix4(name:string, value:Matrix4, supressWarnings:bool) : void
+    + SetVector3(name:string, value:Vector3, supressWarnings:bool) : void
+    + SetVector2(name:string, value:Vector2) : void
+    + SetFloat(name:string, value:float, supressWarnings:bool) : void
+    + SetInt(name:string, value:int, supressWarnings:bool) : void
+}
+class "List`1"<T> {
+}
+SerializeableObject <|-- GLMaterial
+GLMaterial o-> "textures<GLTexture2D>" "List`1"
+class GLMesh {
+    + name : string = "new mesh"
+    + GLMesh()
+    + SetVertices(vertices:float[]) : void
+    + SetIndices(indices:int[]) : void
+    + SetUVS(uvs:float[]) : void
+    + SetNormals(normals:float[]) : void
+    + SetVertexColors(colors:float[]) : void
+    + <<override>> Serialize() : string
+    + <<override>> Deserialize(data:string) : void
+}
+SerializeableObject <|-- GLMesh
+GLMesh --> "RenderMesh" GLMeshData
+class Transform {
+    + <<override>> IsExclusiveComponent : bool <<get>> = true
+    + SetParent(parent:Transform) : void
+    + TRS() : Matrix4
+    + LocalTRS() : Matrix4
+}
+class "Component`1"<T> {
+}
+"Component`1" "<Transform>" <|-- Transform
+Transform o-> "position" Vector3
+Transform o-> "rotation" Quaternion
+Transform o-> "scale" Vector3
+Transform o-> "parent" Transform
+abstract class RenderComponent {
+    + {abstract} OnRender(cam:Camera) : void
+}
+class "Component`1"<T> {
+}
+"Component`1" "<RenderComponent>" <|-- RenderComponent
+class Camera {
+    + FOV : int <<get>> <<set>>
+    + Near : float <<get>> <<set>>
+    + Far : float <<get>> <<set>>
+    + Aspect : float <<get>>
+    + UpdateProjectionMatrix(size:Vector2i) : void
+    + SetActive(active:bool) : void
+    + {static} SetNoneActive() : void
+}
+class "Component`1"<T> {
+}
+"Component`1" "<Camera>" <|-- Camera
+Camera --> "Active" Camera
+Camera --> "ProjectionMatrix" Matrix4
+Camera --> "ViewMatrix" Matrix4
+class GLMeshRenderer {
+    + SetMesh(mesh:GLMesh) : void
+    + <<override>> OnCreate() : void
+    + ReloadMesh() : void
+    + SetMaterial(mat:GLMaterial) : void
+    + <<override>> OnRender(cam:Camera) : void
+    + <<override>> OnDestroy() : void
+}
+RenderComponent <|-- GLMeshRenderer
+GLMeshRenderer o-> "materal" GLMaterial
+GLMeshRenderer o-> "Mesh" GLMesh
+class StringBlock <<struct>> {
+    + name : string
+    + content : string
+}
+class OpenGLShader {
+    + name : string
+    + OpenGLShader(filePath:string)
+    + BindSource() : void
+    + CompileAndLoad() : void
+    + Enable() : void
+    + CleanUp() : void
+    + GetUniformLocation(name:string) : int
+    + GetAttribLocation(name:string) : int
+    + BindAttribLocation(index:int, name:string) : void
+    + <<override>> Serialize() : string
+    + <<override>> Deserialize(data:string) : void
+    + Handle() : int
+}
+SerializeableObject <|-- OpenGLShader
+class GLQuadRenderer {
+    + <<override>> OnCreate() : void
+    + ReloadMesh() : void
+    + SetMaterial(mat:GLMaterial) : void
+    + <<override>> OnRender(cam:Camera) : void
+    + <<override>> OnDestroy() : void
+}
+RenderComponent <|-- GLQuadRenderer
+GLQuadRenderer o-> "materal" GLMaterial
+GLQuadRenderer --> "quad" GLMeshData
+@enduml

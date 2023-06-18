@@ -1,0 +1,11 @@
+@startuml
+class GLTexture2D {
+    + GLTexture2D(path:string)
+    + SetFilterMode(mode:TextureMinFilter, bind:bool) : void
+    + SetWrapMode(mode:TextureWrapMode, bind:bool) : void
+    + Bind() : void
+    + <<override>> Serialize() : string
+    + <<override>> Deserialize(data:string) : void
+}
+SerializeableObject <|-- GLTexture2D
+@enduml

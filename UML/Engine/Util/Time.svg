@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentScriptType="application/ecmascript" contentStyleType="text/css" height="123px" preserveAspectRatio="none" style="width:173px;height:123px;" version="1.1" viewBox="0 0 173 123" width="173px" zoomAndPan="magnify"><defs><filter height="300%" id="f1410ltotq2f2v" width="300%" x="-1" y="-1"><feGaussianBlur result="blurOut" stdDeviation="2.0"/><feColorMatrix in="blurOut" result="blurOut2" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .4 0"/><feOffset dx="4.0" dy="4.0" in="blurOut2" result="blurOut3"/><feBlend in="SourceGraphic" in2="blurOut3" mode="normal"/></filter></defs><g><!--MD5=[2e42295458bb0bec21c9622a623eb29e]
+class Time--><rect fill="#FEFECE" filter="url(#f1410ltotq2f2v)" height="105.1563" id="Time" style="stroke: #A80036; stroke-width: 1.5;" width="155" x="7" y="7"/><ellipse cx="58.25" cy="25.9688" fill="#ADD1B2" rx="11" ry="11" style="stroke: #A80036; stroke-width: 1.0;"/><path d="M61.2188,31.6094 Q60.6406,31.9063 60,32.0469 Q59.3594,32.2031 58.6563,32.2031 Q56.1563,32.2031 54.8281,30.5625 Q53.5156,28.9063 53.5156,25.7813 Q53.5156,22.6563 54.8281,21 Q56.1563,19.3438 58.6563,19.3438 Q59.3594,19.3438 60,19.5 Q60.6563,19.6563 61.2188,19.9531 L61.2188,22.6719 Q60.5938,22.0938 60,21.8281 Q59.4063,21.5469 58.7813,21.5469 Q57.4375,21.5469 56.75,22.625 Q56.0625,23.6875 56.0625,25.7813 Q56.0625,27.875 56.75,28.9531 Q57.4375,30.0156 58.7813,30.0156 Q59.4063,30.0156 60,29.75 Q60.5938,29.4688 61.2188,28.8906 L61.2188,31.6094 Z "/><text fill="#000000" font-family="sans-serif" font-size="12" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="48" x="76.75" y="23.1387">«static»</text><text fill="#000000" font-family="sans-serif" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="29" x="86.25" y="37.1074">Time</text><line style="stroke: #A80036; stroke-width: 1.5;" x1="8" x2="161" y1="44.9375" y2="44.9375"/><ellipse cx="18" cy="55.9375" fill="none" rx="3" ry="3" style="stroke: #038048; stroke-width: 1.0;"/><text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" text-decoration="underline" textLength="129" x="27" y="59.1479">deltaTime : float «get»</text><ellipse cx="18" cy="68.7422" fill="none" rx="3" ry="3" style="stroke: #038048; stroke-width: 1.0;"/><text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" text-decoration="underline" textLength="98" x="27" y="71.9526">time : float «get»</text><line style="stroke: #A80036; stroke-width: 1.5;" x1="8" x2="161" y1="78.5469" y2="78.5469"/><ellipse cx="18" cy="89.5469" fill="#84BE84" rx="3" ry="3" style="stroke: #038048; stroke-width: 1.0;"/><text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" text-decoration="underline" textLength="65" x="27" y="92.7573">Tick() : void</text><ellipse cx="18" cy="102.3516" fill="#84BE84" rx="3" ry="3" style="stroke: #038048; stroke-width: 1.0;"/><text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" text-decoration="underline" textLength="75" x="27" y="105.562">Reset() : void</text><!--MD5=[8250a6775a010809adeb883c6f270790]
+@startuml
+class Time <<static>> {
+    + {static} deltaTime : float <<get>>
+    + {static} time : float <<get>>
+    + {static} Tick() : void
+    + {static} Reset() : void
+}
+@enduml
+
+PlantUML version 1.2020.02(Sun Mar 01 10:22:07 GMT 2020)
+(GPL source distribution)
+Java Runtime: OpenJDK Runtime Environment
+JVM: OpenJDK 64-Bit Server VM
+Java Version: 11.0.9+11-Ubuntu-0ubuntu1
+Operating System: Linux
+Default Encoding: ANSI_X3.4-1968
+Language: en
+Country: US
+--></g></svg>

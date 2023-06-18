@@ -1,0 +1,15 @@
+@startuml
+class Transform {
+    + <<override>> IsExclusiveComponent : bool <<get>> = true
+    + SetParent(parent:Transform) : void
+    + TRS() : Matrix4
+    + LocalTRS() : Matrix4
+}
+class "Component`1"<T> {
+}
+"Component`1" "<Transform>" <|-- Transform
+Transform o-> "position" Vector3
+Transform o-> "rotation" Quaternion
+Transform o-> "scale" Vector3
+Transform o-> "parent" Transform
+@enduml

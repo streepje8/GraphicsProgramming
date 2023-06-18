@@ -1,0 +1,8 @@
+@startuml
+class Application <<static>> {
+    + {static} Window : EngineWindow? <<get>> = null
+    + {static} AssetsFolder : string = "../../../Assets"
+    + {static} SetWindow(win:EngineWindow) : void
+    + {static} Quit() : void
+}
+@enduml

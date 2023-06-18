@@ -1,0 +1,12 @@
+@startuml
+class GLQuadRenderer {
+    + <<override>> OnCreate() : void
+    + ReloadMesh() : void
+    + SetMaterial(mat:GLMaterial) : void
+    + <<override>> OnRender(cam:Camera) : void
+    + <<override>> OnDestroy() : void
+}
+RenderComponent <|-- GLQuadRenderer
+GLQuadRenderer o-> "materal" GLMaterial
+GLQuadRenderer --> "quad" GLMeshData
+@enduml

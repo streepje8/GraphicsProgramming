@@ -1,0 +1,13 @@
+@startuml
+enum DefaultMesh {
+    Cube,
+    Plane,
+    Sphere,
+    Capsule,
+    Torus,
+}
+class GLModelLoader {
+    + {static} LoadDefaultMesh(mesh:DefaultMesh) : GLMesh
+    + {static} LoadModel(path:string) : GLMesh
+}
+@enduml

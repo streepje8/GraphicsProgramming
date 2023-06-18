@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentScriptType="application/ecmascript" contentStyleType="text/css" height="131px" preserveAspectRatio="none" style="width:456px;height:131px;" version="1.1" viewBox="0 0 456 131" width="456px" zoomAndPan="magnify"><defs><filter height="300%" id="fows8tzb24ws3" width="300%" x="-1" y="-1"><feGaussianBlur result="blurOut" stdDeviation="2.0"/><feColorMatrix in="blurOut" result="blurOut2" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .4 0"/><feOffset dx="4.0" dy="4.0" in="blurOut2" result="blurOut3"/><feBlend in="SourceGraphic" in2="blurOut3" mode="normal"/></filter></defs><g><!--MD5=[cd1b62a65ba3cd25ba7a849b969ae4e6]
+class DefaultMesh--><rect fill="#FEFECE" filter="url(#fows8tzb24ws3)" height="112.0234" id="DefaultMesh" style="stroke: #A80036; stroke-width: 1.5;" width="110" x="6" y="8"/><ellipse cx="21" cy="24" fill="#EB937F" rx="11" ry="11" style="stroke: #A80036; stroke-width: 1.0;"/><path d="M25.1094,30 L17.3906,30 L17.3906,17.6094 L25.1094,17.6094 L25.1094,19.7656 L19.8438,19.7656 L19.8438,22.4375 L24.6094,22.4375 L24.6094,24.5938 L19.8438,24.5938 L19.8438,27.8438 L25.1094,27.8438 L25.1094,30 Z "/><text fill="#000000" font-family="sans-serif" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="78" x="35" y="28.1543">DefaultMesh</text><line style="stroke: #A80036; stroke-width: 1.5;" x1="7" x2="115" y1="40" y2="40"/><text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" textLength="33" x="12" y="54.2104">Cube,</text><text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" textLength="35" x="12" y="67.0151">Plane,</text><text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" textLength="45" x="12" y="79.8198">Sphere,</text><text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" textLength="50" x="12" y="92.6245">Capsule,</text><text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" textLength="37" x="12" y="105.4292">Torus,</text><line style="stroke: #A80036; stroke-width: 1.5;" x1="7" x2="115" y1="112.0234" y2="112.0234"/><!--MD5=[7cce9a434468e9f6dbb567414f5a74fd]
+class GLModelLoader--><rect fill="#FEFECE" filter="url(#fows8tzb24ws3)" height="73.6094" id="GLModelLoader" style="stroke: #A80036; stroke-width: 1.5;" width="294" x="151" y="27"/><ellipse cx="246.25" cy="43" fill="#ADD1B2" rx="11" ry="11" style="stroke: #A80036; stroke-width: 1.0;"/><path d="M249.2188,48.6406 Q248.6406,48.9375 248,49.0781 Q247.3594,49.2344 246.6563,49.2344 Q244.1563,49.2344 242.8281,47.5938 Q241.5156,45.9375 241.5156,42.8125 Q241.5156,39.6875 242.8281,38.0313 Q244.1563,36.375 246.6563,36.375 Q247.3594,36.375 248,36.5313 Q248.6563,36.6875 249.2188,36.9844 L249.2188,39.7031 Q248.5938,39.125 248,38.8594 Q247.4063,38.5781 246.7813,38.5781 Q245.4375,38.5781 244.75,39.6563 Q244.0625,40.7188 244.0625,42.8125 Q244.0625,44.9063 244.75,45.9844 Q245.4375,47.0469 246.7813,47.0469 Q247.4063,47.0469 248,46.7813 Q248.5938,46.5 249.2188,45.9219 L249.2188,48.6406 Z "/><text fill="#000000" font-family="sans-serif" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="95" x="266.75" y="47.1543">GLModelLoader</text><line style="stroke: #A80036; stroke-width: 1.5;" x1="152" x2="444" y1="59" y2="59"/><line style="stroke: #A80036; stroke-width: 1.5;" x1="152" x2="444" y1="67" y2="67"/><ellipse cx="162" cy="78" fill="#84BE84" rx="3" ry="3" style="stroke: #038048; stroke-width: 1.0;"/><text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" text-decoration="underline" textLength="268" x="171" y="81.2104">LoadDefaultMesh(mesh:DefaultMesh) : GLMesh</text><ellipse cx="162" cy="90.8047" fill="#84BE84" rx="3" ry="3" style="stroke: #038048; stroke-width: 1.0;"/><text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" text-decoration="underline" textLength="187" x="171" y="94.0151">LoadModel(path:string) : GLMesh</text><!--MD5=[fe959cbf1eea4001bbf252e111a2e77d]
+@startuml
+enum DefaultMesh {
+    Cube,
+    Plane,
+    Sphere,
+    Capsule,
+    Torus,
+}
+class GLModelLoader {
+    + {static} LoadDefaultMesh(mesh:DefaultMesh) : GLMesh
+    + {static} LoadModel(path:string) : GLMesh
+}
+@enduml
+
+PlantUML version 1.2020.02(Sun Mar 01 10:22:07 GMT 2020)
+(GPL source distribution)
+Java Runtime: OpenJDK Runtime Environment
+JVM: OpenJDK 64-Bit Server VM
+Java Version: 11.0.9+11-Ubuntu-0ubuntu1
+Operating System: Linux
+Default Encoding: ANSI_X3.4-1968
+Language: en
+Country: US
+--></g></svg>

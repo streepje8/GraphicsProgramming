@@ -1,0 +1,8 @@
+@startuml
+abstract class RenderComponent {
+    + {abstract} OnRender(cam:Camera) : void
+}
+class "Component`1"<T> {
+}
+"Component`1" "<RenderComponent>" <|-- RenderComponent
+@enduml

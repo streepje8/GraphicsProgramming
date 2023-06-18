@@ -1,0 +1,15 @@
+@startuml
+class GLMesh {
+    + name : string = "new mesh"
+    + GLMesh()
+    + SetVertices(vertices:float[]) : void
+    + SetIndices(indices:int[]) : void
+    + SetUVS(uvs:float[]) : void
+    + SetNormals(normals:float[]) : void
+    + SetVertexColors(colors:float[]) : void
+    + <<override>> Serialize() : string
+    + <<override>> Deserialize(data:string) : void
+}
+SerializeableObject <|-- GLMesh
+GLMesh --> "RenderMesh" GLMeshData
+@enduml

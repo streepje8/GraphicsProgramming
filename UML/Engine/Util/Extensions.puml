@@ -1,0 +1,5 @@
+@startuml
+class Extensions <<static>> {
+    + {static} UnityMultiply(lhs:Quaternion, rhs:Quaternion) : Quaternion
+}
+@enduml

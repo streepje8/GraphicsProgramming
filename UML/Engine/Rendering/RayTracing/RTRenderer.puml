@@ -1,0 +1,17 @@
+@startuml
+class RTRenderer {
+    + {static} SkyboxMaterial : GLMaterial? <<get>> <<set>>
+    + {static} MainRenderer : GLMaterial? <<get>>
+    + {static} MainRefiner : GLMaterial? <<get>>
+    + {static} TexToScreen : GLMaterial? <<get>>
+    + <<override>> OnResize(engineWindow:EngineWindow, width:int, height:int) : void
+    + {static} AddShaderInternal(shader:OpenGLShader) : void
+    + {static} GetShader(name:string) : OpenGLShader?
+    + <<override>> OnLoad() : void
+    + ResetToFirstFrame() : void
+    + <<override>> OnRenderFrame() : void
+    + <<override>> OnUnLoad() : void
+}
+Renderer <|-- RTRenderer
+RTRenderer --> "ClearColor" Vector4
+@enduml

@@ -1,0 +1,17 @@
+@startuml
+class Camera {
+    + FOV : int <<get>> <<set>>
+    + Near : float <<get>> <<set>>
+    + Far : float <<get>> <<set>>
+    + Aspect : float <<get>>
+    + UpdateProjectionMatrix(size:Vector2i) : void
+    + SetActive(active:bool) : void
+    + {static} SetNoneActive() : void
+}
+class "Component`1"<T> {
+}
+"Component`1" "<Camera>" <|-- Camera
+Camera --> "Active" Camera
+Camera --> "ProjectionMatrix" Matrix4
+Camera --> "ViewMatrix" Matrix4
+@enduml

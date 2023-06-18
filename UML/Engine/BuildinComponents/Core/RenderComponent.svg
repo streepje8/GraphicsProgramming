@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentScriptType="application/ecmascript" contentStyleType="text/css" height="187px" preserveAspectRatio="none" style="width:259px;height:187px;" version="1.1" viewBox="0 0 259 187" width="259px" zoomAndPan="magnify"><defs><filter height="300%" id="fqicj0l2hoc00" width="300%" x="-1" y="-1"><feGaussianBlur result="blurOut" stdDeviation="2.0"/><feColorMatrix in="blurOut" result="blurOut2" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .4 0"/><feOffset dx="4.0" dy="4.0" in="blurOut2" result="blurOut3"/><feBlend in="SourceGraphic" in2="blurOut3" mode="normal"/></filter></defs><g><!--MD5=[7dd719c5f2fd4931b5d49d187114aa01]
+class RenderComponent--><rect fill="#FEFECE" filter="url(#fqicj0l2hoc00)" height="60.8047" id="RenderComponent" style="stroke: #A80036; stroke-width: 1.5;" width="200" x="48" y="116"/><ellipse cx="85.95" cy="132" fill="#A9DCDF" rx="11" ry="11" style="stroke: #A80036; stroke-width: 1.0;"/><path d="M86.0594,127.3438 L84.9031,132.4219 L87.2313,132.4219 L86.0594,127.3438 Z M84.575,125.1094 L87.5594,125.1094 L90.9188,137.5 L88.4656,137.5 L87.7,134.4375 L84.4188,134.4375 L83.6688,137.5 L81.2313,137.5 L84.575,125.1094 Z "/><text fill="#000000" font-family="sans-serif" font-size="12" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="117" x="105.05" y="136.1543">RenderComponent</text><line style="stroke: #A80036; stroke-width: 1.5;" x1="49" x2="247" y1="148" y2="148"/><line style="stroke: #A80036; stroke-width: 1.5;" x1="49" x2="247" y1="156" y2="156"/><ellipse cx="59" cy="167" fill="#84BE84" rx="3" ry="3" style="stroke: #038048; stroke-width: 1.0;"/><text fill="#000000" font-family="sans-serif" font-size="11" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="174" x="68" y="170.2104">OnRender(cam:Camera) : void</text><!--MD5=[ded6bb2856e5fb3268d4540b5b6340b7]
+class Component`1--><rect fill="#FEFECE" filter="url(#fqicj0l2hoc00)" height="48" id="Component`1" style="stroke: #A80036; stroke-width: 1.5;" width="129" x="83.5" y="8"/><ellipse cx="98.5" cy="24" fill="#ADD1B2" rx="11" ry="11" style="stroke: #A80036; stroke-width: 1.0;"/><path d="M101.4688,29.6406 Q100.8906,29.9375 100.25,30.0781 Q99.6094,30.2344 98.9063,30.2344 Q96.4063,30.2344 95.0781,28.5938 Q93.7656,26.9375 93.7656,23.8125 Q93.7656,20.6875 95.0781,19.0313 Q96.4063,17.375 98.9063,17.375 Q99.6094,17.375 100.25,17.5313 Q100.9063,17.6875 101.4688,17.9844 L101.4688,20.7031 Q100.8438,20.125 100.25,19.8594 Q99.6563,19.5781 99.0313,19.5781 Q97.6875,19.5781 97,20.6563 Q96.3125,21.7188 96.3125,23.8125 Q96.3125,25.9063 97,26.9844 Q97.6875,28.0469 99.0313,28.0469 Q99.6563,28.0469 100.25,27.7813 Q100.8438,27.5 101.4688,26.9219 L101.4688,29.6406 Z "/><text fill="#000000" font-family="sans-serif" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="86" x="112.5" y="28.1543">Component`1</text><rect fill="#FFFFFF" height="15.9688" style="stroke: #000000; stroke-width: 1.0; stroke-dasharray: 2.0,2.0;" width="9" x="206.5" y="5"/><text fill="#000000" font-family="sans-serif" font-size="12" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="7" x="207.5" y="17.1387">T</text><line style="stroke: #A80036; stroke-width: 1.5;" x1="84.5" x2="211.5" y1="40" y2="40"/><line style="stroke: #A80036; stroke-width: 1.5;" x1="84.5" x2="211.5" y1="48" y2="48"/><!--MD5=[f7b4f785f4f70cf1b9ac464790042c05]
+reverse link Component`1 to RenderComponent--><path d="M148,76.11 C148,89.31 148,103.54 148,115.65 " fill="none" id="Component`1&lt;-RenderComponent" style="stroke: #A80036; stroke-width: 1.0;"/><polygon fill="none" points="141,76.04,148,56.04,155,76.04,141,76.04" style="stroke: #A80036; stroke-width: 1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="142" x="-12.1937" y="76.206">&lt;RenderComponent&gt;</text><!--MD5=[fcf4bf4a5a26456c8390ea80a4959685]
+@startuml
+abstract class RenderComponent {
+    + {abstract} OnRender(cam:Camera) : void
+}
+class "Component`1"<T> {
+}
+"Component`1" "<RenderComponent>" <|- - RenderComponent
+@enduml
+
+PlantUML version 1.2020.02(Sun Mar 01 10:22:07 GMT 2020)
+(GPL source distribution)
+Java Runtime: OpenJDK Runtime Environment
+JVM: OpenJDK 64-Bit Server VM
+Java Version: 11.0.9+11-Ubuntu-0ubuntu1
+Operating System: Linux
+Default Encoding: ANSI_X3.4-1968
+Language: en
+Country: US
+--></g></svg>

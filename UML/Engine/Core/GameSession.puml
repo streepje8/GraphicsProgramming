@@ -1,0 +1,16 @@
+@startuml
+class GameSession {
+    + {static} ActiveSession : GameSession? <<get>> <<set>>
+    + CreateEnvironment() : InteractiveEnvironment?
+    + UnloadEnvironment(environment:InteractiveEnvironment?) : void
+    + GameSession(game:Game)
+    + CloseSession() : void
+    + BindWindow(window:EngineWindow) : void
+    + UnloadAllEnvironments() : void
+}
+class "List`1"<T> {
+}
+GameSession --> "Game" Game
+GameSession --> "Window" EngineWindow
+GameSession o-> "LoadedEnvironments<InteractiveEnvironment?>" "List`1"
+@enduml

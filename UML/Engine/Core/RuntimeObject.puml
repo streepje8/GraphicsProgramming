@@ -1,0 +1,6 @@
+@startuml
+class RuntimeObject {
+    + name : string = "BOI"
+}
+SerializeableObject <|-- RuntimeObject
+@enduml

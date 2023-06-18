@@ -1,0 +1,23 @@
+@startuml
+class Entity {
+    + ID : int <<get>>
+    + nextEntityID : int
+    + previousEntityID : int
+    + transform : Transform?
+    + Entity(id:int, environment:InteractiveEnvironment)
+    + GetEnvironment() : InteractiveEnvironment
+    + Destroy() : void
+    + AddComponent() : T?
+    + GetComponent() : T
+    + GetComponents() : Span<T>
+    + RemoveComponent(component:T) : void
+    + Update() : void
+    + SetTransform(transform:Transform?) : void
+    + <<override>> Serialize() : string
+    + <<override>> Deserialize(data:string) : void
+}
+class "Dictionary`2"<T1,T2> {
+}
+RuntimeObject <|-- Entity
+Entity o-> "components<Type,int[]>" "Dictionary`2"
+@enduml
